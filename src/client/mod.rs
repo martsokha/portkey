@@ -6,7 +6,7 @@
 //! - [`PortkeyBuilder`] - Builder pattern for creating configurations
 //! - [`PortkeyClient`] - Main client for making API requests
 
-pub mod config;
+mod config;
 mod portkey;
 
 pub use config::{AuthMethod, PortkeyBuilder, PortkeyBuilderError, PortkeyConfig};

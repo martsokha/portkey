@@ -11,6 +11,9 @@ use reqwest::{Client, RequestBuilder};
 use super::config::{AuthMethod, PortkeyConfig};
 use crate::error::Result;
 
+#[cfg(feature = "tracing")]
+use crate::TRACING_TARGET_CLIENT;
+
 /// Main Portkey API client for interacting with all Portkey services.
 ///
 /// The `PortkeyClient` provides access to all Portkey API endpoints through specialized
@@ -94,7 +97,7 @@ impl PortkeyClient {
     #[cfg_attr(feature = "tracing", tracing::instrument(skip(config), fields(api_key = %config.masked_api_key())))]
     pub fn new(config: PortkeyConfig) -> Result<Self> {
         #[cfg(feature = "tracing")]
-        tracing::debug!("Creating Portkey client");
+        tracing::debug!(target: TRACING_TARGET_CLIENT, "Creating Portkey client");
 
         let client = if let Some(custom_client) = config.client() {
             custom_client
@@ -104,6 +107,7 @@ impl PortkeyClient {
 
         #[cfg(feature = "tracing")]
         tracing::info!(
+            target: TRACING_TARGET_CLIENT,
             base_url = %config.base_url(),
             timeout = ?config.timeout(),
             api_key = %config.masked_api_key(),
@@ -137,7 +141,7 @@ impl PortkeyClient {
     #[cfg_attr(feature = "tracing", tracing::instrument)]
     pub fn from_env() -> Result<Self> {
         #[cfg(feature = "tracing")]
-        tracing::debug!("Creating Portkey client from environment");
+        tracing::debug!(target: TRACING_TARGET_CLIENT, "Creating Portkey client from environment");
 
         let config = PortkeyConfig::from_env()?;
         Self::new(config)
@@ -204,6 +208,7 @@ impl PortkeyClient {
 
         #[cfg(feature = "tracing")]
         tracing::trace!(
+            target: TRACING_TARGET_CLIENT,
             url = %url,
             method = "GET",
             "Creating HTTP GET request"
@@ -228,6 +233,7 @@ impl PortkeyClient {
 
         #[cfg(feature = "tracing")]
         tracing::trace!(
+            target: TRACING_TARGET_CLIENT,
             url = %url,
             method = "POST",
             "Creating HTTP POST request"
@@ -252,6 +258,7 @@ impl PortkeyClient {
 
         #[cfg(feature = "tracing")]
         tracing::trace!(
+            target: TRACING_TARGET_CLIENT,
             url = %url,
             method = "PUT",
             "Creating HTTP PUT request"
@@ -276,6 +283,7 @@ impl PortkeyClient {
 
         #[cfg(feature = "tracing")]
         tracing::trace!(
+            target: TRACING_TARGET_CLIENT,
             url = %url,
             method = "PATCH",
             "Creating HTTP PATCH request"
@@ -300,6 +308,7 @@ impl PortkeyClient {
 
         #[cfg(feature = "tracing")]
         tracing::trace!(
+            target: TRACING_TARGET_CLIENT,
             url = %url,
             method = "DELETE",
             "Creating HTTP DELETE request"

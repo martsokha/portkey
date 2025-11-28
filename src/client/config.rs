@@ -13,6 +13,9 @@ use reqwest::Client;
 use super::portkey::PortkeyClient;
 use crate::error::Result;
 
+#[cfg(feature = "tracing")]
+use crate::TRACING_TARGET_CONFIG;
+
 /// Authentication method for Portkey API.
 ///
 /// Portkey supports multiple authentication methods for routing requests
@@ -26,7 +29,7 @@ pub enum AuthMethod {
     ///
     /// # Example
     /// ```no_run
-    /// # use portkey_sdk::client::config::AuthMethod;
+    /// # use portkey_sdk::AuthMethod;
     /// let auth = AuthMethod::VirtualKey {
     ///     virtual_key: "your-virtual-key".to_string(),
     /// };
@@ -43,7 +46,7 @@ pub enum AuthMethod {
     ///
     /// # Example
     /// ```no_run
-    /// # use portkey_sdk::client::config::AuthMethod;
+    /// # use portkey_sdk::AuthMethod;
     /// let auth = AuthMethod::ProviderAuth {
     ///     provider: "openai".to_string(),
     ///     authorization: "Bearer sk-...".to_string(),
@@ -66,7 +69,7 @@ pub enum AuthMethod {
     ///
     /// # Example
     /// ```no_run
-    /// # use portkey_sdk::client::config::AuthMethod;
+    /// # use portkey_sdk::AuthMethod;
     /// let auth = AuthMethod::Config {
     ///     config_id: "pc-config-123".to_string(),
     /// };
@@ -88,7 +91,7 @@ pub enum AuthMethod {
 /// Creating a config with virtual key:
 /// ```no_run
 /// # use portkey_sdk::PortkeyConfig;
-/// # use portkey_sdk::client::config::AuthMethod;
+/// # use portkey_sdk::AuthMethod;
 /// let config = PortkeyConfig::builder()
 ///     .with_api_key("your-portkey-api-key")
 ///     .with_auth_method(AuthMethod::VirtualKey {
@@ -101,7 +104,7 @@ pub enum AuthMethod {
 /// Creating a config with provider auth:
 /// ```no_run
 /// # use portkey_sdk::PortkeyConfig;
-/// # use portkey_sdk::client::config::AuthMethod;
+/// # use portkey_sdk::AuthMethod;
 /// let config = PortkeyConfig::builder()
 ///     .with_api_key("your-portkey-api-key")
 ///     .with_auth_method(AuthMethod::ProviderAuth {
@@ -367,11 +370,11 @@ impl PortkeyConfig {
     #[cfg_attr(feature = "tracing", tracing::instrument)]
     pub fn from_env() -> Result<Self> {
         #[cfg(feature = "tracing")]
-        tracing::debug!("Loading configuration from environment");
+        tracing::debug!(target: TRACING_TARGET_CONFIG, "Loading configuration from environment");
 
         let api_key = std::env::var("PORTKEY_API_KEY").map_err(|_| {
             #[cfg(feature = "tracing")]
-            tracing::error!("PORTKEY_API_KEY environment variable not set");
+            tracing::error!(target: TRACING_TARGET_CONFIG, "PORTKEY_API_KEY environment variable not set");
 
             PortkeyBuilderError::ValidationError(
                 "PORTKEY_API_KEY environment variable not set".to_string(),
@@ -410,7 +413,7 @@ impl PortkeyConfig {
         // Optional: custom base URL
         if let Ok(base_url) = std::env::var("PORTKEY_BASE_URL") {
             #[cfg(feature = "tracing")]
-            tracing::debug!(base_url = %base_url, "Using custom base URL");
+            tracing::debug!(target: TRACING_TARGET_CONFIG, base_url = %base_url, "Using custom base URL");
 
             builder = builder.with_base_url(base_url);
         }
@@ -419,7 +422,7 @@ impl PortkeyConfig {
         if let Ok(timeout_str) = std::env::var("PORTKEY_TIMEOUT_SECS") {
             let timeout_secs = timeout_str.parse::<u64>().map_err(|_| {
                 #[cfg(feature = "tracing")]
-                tracing::error!(timeout_str = %timeout_str, "Invalid PORTKEY_TIMEOUT_SECS value");
+                tracing::error!(target: TRACING_TARGET_CONFIG, timeout_str = %timeout_str, "Invalid PORTKEY_TIMEOUT_SECS value");
 
                 PortkeyBuilderError::ValidationError(format!(
                     "Invalid PORTKEY_TIMEOUT_SECS value: {}",
@@ -428,7 +431,7 @@ impl PortkeyConfig {
             })?;
 
             #[cfg(feature = "tracing")]
-            tracing::debug!(timeout_secs, "Using custom timeout");
+            tracing::debug!(target: TRACING_TARGET_CONFIG, timeout_secs, "Using custom timeout");
 
             builder = builder.with_timeout(Duration::from_secs(timeout_secs));
         }
@@ -454,6 +457,7 @@ impl PortkeyConfig {
 
         #[cfg(feature = "tracing")]
         tracing::info!(
+            target: TRACING_TARGET_CONFIG,
             base_url = %config.base_url(),
             timeout = ?config.timeout(),
             "Configuration loaded successfully from environment"
