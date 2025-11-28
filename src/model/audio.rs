@@ -5,10 +5,11 @@
 use serde::{Deserialize, Serialize};
 
 /// Response format for audio transcription.
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, Default)]
 #[serde(rename_all = "snake_case")]
 pub enum TranscriptionResponseFormat {
     /// JSON format with just the transcribed text.
+    #[default]
     Json,
     /// Plain text format.
     Text,
@@ -18,12 +19,6 @@ pub enum TranscriptionResponseFormat {
     VerboseJson,
     /// WebVTT subtitle format.
     Vtt,
-}
-
-impl Default for TranscriptionResponseFormat {
-    fn default() -> Self {
-        Self::Json
-    }
 }
 
 /// Timestamp granularity for verbose transcription.
@@ -217,10 +212,11 @@ pub enum Voice {
 }
 
 /// Audio format for speech output.
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, Default)]
 #[serde(rename_all = "lowercase")]
 pub enum SpeechResponseFormat {
     /// MP3 format (default)
+    #[default]
     Mp3,
     /// Opus format
     Opus,
@@ -232,12 +228,6 @@ pub enum SpeechResponseFormat {
     Wav,
     /// PCM format
     Pcm,
-}
-
-impl Default for SpeechResponseFormat {
-    fn default() -> Self {
-        Self::Mp3
-    }
 }
 
 /// Request for creating speech from text.
