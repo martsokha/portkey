@@ -5,10 +5,11 @@
 use serde::{Deserialize, Serialize};
 
 /// Sort field for models.
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, Default)]
 #[serde(rename_all = "lowercase")]
 pub enum ModelSortField {
     /// Sort by model name
+    #[default]
     Name,
     /// Sort by provider
     Provider,
@@ -17,26 +18,15 @@ pub enum ModelSortField {
     AiService,
 }
 
-impl Default for ModelSortField {
-    fn default() -> Self {
-        Self::Name
-    }
-}
-
 /// Sort order for models.
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, Default)]
 #[serde(rename_all = "lowercase")]
 pub enum SortOrder {
     /// Ascending order
+    #[default]
     Asc,
     /// Descending order
     Desc,
-}
-
-impl Default for SortOrder {
-    fn default() -> Self {
-        Self::Asc
-    }
 }
 
 /// Parameters for listing models.

@@ -25,7 +25,7 @@ pub enum ImageResponseFormat {
 }
 
 /// Image size options
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, Default)]
 pub enum ImageSize {
     /// 256x256 pixels (DALL-E 2 only)
     #[serde(rename = "256x256")]
@@ -37,6 +37,7 @@ pub enum ImageSize {
 
     /// 1024x1024 pixels (DALL-E 2 and 3)
     #[serde(rename = "1024x1024")]
+    #[default]
     Size1024x1024,
 
     /// 1792x1024 pixels (DALL-E 3 only)
@@ -46,12 +47,6 @@ pub enum ImageSize {
     /// 1024x1792 pixels (DALL-E 3 only)
     #[serde(rename = "1024x1792")]
     Size1024x1792,
-}
-
-impl Default for ImageSize {
-    fn default() -> Self {
-        Self::Size1024x1024
-    }
 }
 
 /// Image style for DALL-E 3
