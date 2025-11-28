@@ -9,8 +9,8 @@ use std::time::Duration;
 use derive_builder::Builder;
 use reqwest::Client;
 
-use crate::Result;
-use crate::client::PortkeyClient;
+use super::portkey::PortkeyClient;
+use crate::error::Result;
 
 /// Configuration for the Portkey API client.
 ///

@@ -8,8 +8,8 @@ use std::sync::Arc;
 
 use reqwest::{Client, RequestBuilder};
 
-use crate::Result;
-use crate::config::PortkeyConfig;
+use super::config::PortkeyConfig;
+use crate::error::Result;
 
 /// Main Portkey API client for interacting with all Portkey services.
 ///

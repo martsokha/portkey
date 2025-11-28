@@ -2,14 +2,12 @@
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![doc = include_str!("../README.md")]
 
-mod client;
-mod config;
-mod error;
+pub mod client;
+pub mod error;
 
 #[doc(hidden)]
 pub mod prelude;
 
 // Re-exports
-pub use client::PortkeyClient;
-pub use config::{PortkeyBuilder, PortkeyConfig};
+pub use client::{PortkeyBuilder, PortkeyClient, PortkeyConfig};
 pub use error::{Error, Result};
