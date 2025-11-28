@@ -14,7 +14,7 @@ pub enum Error {
 
     /// Configuration builder error.
     #[error("Configuration error: {0}")]
-    Config(#[from] crate::client::config::PortkeyBuilderError),
+    Config(#[from] crate::PortkeyBuilderError),
 
     /// API error response.
     #[error("API error: {message}")]

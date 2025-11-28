@@ -3,11 +3,12 @@
 #![doc = include_str!("../README.md")]
 
 pub mod client;
-pub mod error;
+
+mod error;
 
 #[doc(hidden)]
 pub mod prelude;
 
 // Re-exports
-pub use client::{PortkeyBuilder, PortkeyClient, PortkeyConfig};
+pub use client::{PortkeyBuilder, PortkeyBuilderError, PortkeyClient, PortkeyConfig};
 pub use error::{Error, Result};

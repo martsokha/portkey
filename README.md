@@ -1,15 +1,17 @@
 # Portkey SDK for Rust
 
-A Rust SDK for interacting with the [Portkey](https://portkey.ai/) AI Gateway API.
+[![Crates.io](https://img.shields.io/crates/v/portkey-sdk?style=flat-square&color=black)](https://crates.io/crates/portkey-sdk)
+[![Documentation](https://img.shields.io/docsrs/portkey-sdk?style=flat-square&color=black)](https://docs.rs/portkey-sdk)
+[![Build](https://img.shields.io/github/actions/workflow/status/martsokha/portkey/build.yml?style=flat-square&color=black)](https://github.com/martsokha/portkey/actions)
+
+A Rust client library for the [Portkey AI Gateway](https://portkey.ai/). This SDK provides a type-safe, ergonomic interface for managing AI gateway operations, analytics, and more.
 
 ## Features
 
-- 🦀 **Idiomatic Rust** - Built with Rust best practices and type safety
-- 🔧 **Flexible Configuration** - Builder pattern with environment variable support
-- 🔒 **Thread-safe** - Clone-friendly client using `Arc` internally
-- 🎯 **Custom HTTP Client** - Bring your own `reqwest::Client` for advanced configuration
-- 📝 **Well Documented** - Comprehensive documentation and examples
-- 🔍 **Optional Tracing** - Built-in observability support
+- **Type Safety**: Strongly typed models with comprehensive validation
+- **Async/Await**: Built on modern async Rust with `tokio` and `reqwest`
+- **Flexible Configuration**: Builder pattern with environment variable support
+- **Custom HTTP Client**: Bring your own `reqwest::Client` for advanced configuration
 
 ## Installation
 
@@ -17,43 +19,57 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-portkey-sdk = "0.1"
+tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }
+portkey-sdk = { version = "0.1", features = [] }
 ```
 
 ## Quick Start
 
-### Basic Usage
+### Builder Configuration
 
-```rust
-use portkey_sdk::{PortkeyClient, Result};
+```rust,no_run
+use portkey_sdk::{PortkeyConfig, Result};
+use std::time::Duration;
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    // Create client from environment variable PORTKEY_API_KEY
-    let client = PortkeyClient::from_env()?;
-    
+    let client = PortkeyConfig::builder()
+        .with_api_key("your-api-key")
+        .with_base_url("https://api.portkey.ai/v1")
+        .with_timeout(Duration::from_secs(60))
+        .build_client()?;
+
     // Use the client...
-    
+
     Ok(())
 }
 ```
 
-### Custom Configuration
+### Environment Variables
 
-```rust
-use portkey_sdk::PortkeyConfig;
-use std::time::Duration;
+The SDK can be configured using environment variables:
 
-let client = PortkeyConfig::builder()
-    .with_api_key("your-api-key")
-    .with_base_url("https://api.portkey.ai/v1")
-    .with_timeout(Duration::from_secs(60))
-    .build_client()?;
+| Variable               | Required | Default                      | Description                          |
+| ---------------------- | -------- | ---------------------------- | ------------------------------------ |
+| `PORTKEY_API_KEY`      | Yes      | -                            | Your Portkey API key                 |
+| `PORTKEY_BASE_URL`     | No       | `https://api.portkey.ai/v1`  | Custom API base URL                  |
+| `PORTKEY_TIMEOUT_SECS` | No       | `30`                         | Request timeout in seconds (max: 300)|
+
+```rust,no_run
+use portkey_sdk::{PortkeyClient, Result};
+
+#[tokio::main]
+async fn main() -> Result<()> {
+    let client = PortkeyClient::from_env()?;
+    Ok(())
+}
 ```
 
 ### Custom HTTP Client
 
-```rust
+For advanced use cases, you can provide your own configured `reqwest::Client`:
+
+```rust,no_run
 use portkey_sdk::PortkeyConfig;
 use reqwest::Client;
 use std::time::Duration;
@@ -69,40 +85,57 @@ let client = PortkeyConfig::builder()
     .build_client()?;
 ```
 
-## Configuration
+## Optional Features
 
-The SDK can be configured via:
+### TLS Backend
 
-1. **Environment Variables**:
-   - `PORTKEY_API_KEY` - Your Portkey API key (required)
-   - `PORTKEY_BASE_URL` - Custom API base URL (optional)
-   - `PORTKEY_TIMEOUT_SECS` - Request timeout in seconds (optional, default: 30)
+Choose between two TLS implementations:
 
-2. **Builder Pattern**:
-   ```rust
-   PortkeyConfig::builder()
-       .with_api_key("...")
-       .with_base_url("...")
-       .with_timeout(Duration::from_secs(30))
-       .build_client()?
-   ```
+```toml
+# Default: rustls-tls (recommended)
+portkey-sdk = { version = "0.1", features = [] }
 
-## Features
+# Alternative: native-tls
+portkey-sdk = { version = "0.1", features = ["native-tls"], default-features = false }
+```
 
-### Default Features
+### Tracing Support
 
-- `rustls-tls` - Use rustls for TLS (enabled by default)
+Enable comprehensive logging and tracing:
 
-### Optional Features
+```toml
+portkey-sdk = { version = "0.1", features = ["tracing"] }
+```
 
-- `native-tls` - Use native TLS instead of rustls
-- `tracing` - Enable tracing support for observability
-- `strum` - Enable string conversions for enums
+### Enum String Conversions
+
+Enable string parsing and conversion for all enums:
+
+```toml
+portkey-sdk = { version = "0.1", features = ["strum"] }
+```
 
 ## Examples
 
-See the [examples](./examples) directory for more usage examples.
+The `examples/` directory contains comprehensive usage examples:
+
+```bash
+# Set your API key
+export PORTKEY_API_KEY="your-api-key"
+
+# Run the basic usage example
+cargo run --example basic_usage
+```
+
+## Contributing
+
+Contributions are welcome! Please read our [Contributing Guide](CONTRIBUTING.md) for details on how to submit pull requests, report issues, and contribute to the project.
 
 ## License
 
-MIT
+This project is licensed under the MIT License - see the [LICENSE.txt](LICENSE.txt) file for details.
+
+## Resources
+
+- [Portkey Documentation](https://portkey.ai/docs)
+- [Full API Documentation](https://docs.rs/portkey-sdk)

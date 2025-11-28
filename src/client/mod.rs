@@ -1,7 +1,13 @@
-//! Client module containing the main Portkey client and configuration.
+//! Portkey API client configuration and initialization.
+//!
+//! This module provides the core client types for interacting with the Portkey API:
+//!
+//! - [`PortkeyConfig`] - Configuration builder for API settings
+//! - [`PortkeyBuilder`] - Builder pattern for creating configurations
+//! - [`PortkeyClient`] - Main client for making API requests
 
-pub mod config;
-pub mod portkey;
+mod config;
+mod portkey;
 
-pub use config::{PortkeyBuilder, PortkeyConfig};
+pub use config::{PortkeyBuilder, PortkeyBuilderError, PortkeyConfig};
 pub use portkey::PortkeyClient;
