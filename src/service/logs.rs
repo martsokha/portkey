@@ -340,10 +340,10 @@ impl LogsService for PortkeyClient {
 
         let mut request = self.get("/logs/exports");
 
-        if let Some(p) = params {
-            if let Some(workspace_id) = p.workspace_id {
-                request = request.query(&[("workspace_id", workspace_id)]);
-            }
+        if let Some(p) = params
+            && let Some(workspace_id) = p.workspace_id
+        {
+            request = request.query(&[("workspace_id", workspace_id)]);
         }
 
         let response = request.send().await?;

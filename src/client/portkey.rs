@@ -178,10 +178,10 @@ impl PortkeyClient {
             builder = builder.header("x-portkey-trace-id", trace_id);
         }
 
-        if let Some(metadata) = self.inner.config.metadata() {
-            if let Ok(metadata_json) = serde_json::to_string(metadata) {
-                builder = builder.header("x-portkey-metadata", metadata_json);
-            }
+        if let Some(metadata) = self.inner.config.metadata()
+            && let Ok(metadata_json) = serde_json::to_string(metadata)
+        {
+            builder = builder.header("x-portkey-metadata", metadata_json);
         }
 
         if let Some(cache_namespace) = self.inner.config.cache_namespace() {

@@ -2,7 +2,7 @@ use portkey_sdk::model::{
     ChatCompletionRequest, ChatCompletionRequestMessage, ChatCompletionUserMessageContent,
 };
 use portkey_sdk::service::ChatService;
-use portkey_sdk::{AuthMethod, PortkeyClient, PortkeyConfig, Result};
+use portkey_sdk::{AuthMethod, PortkeyConfig, Result};
 
 #[tokio::main]
 async fn main() -> Result<()> {

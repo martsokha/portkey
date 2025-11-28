@@ -278,7 +278,7 @@ pub struct CustomLog {
 #[serde(untagged)]
 pub enum InsertLogRequest {
     /// Single log entry
-    Single(CustomLog),
+    Single(Box<CustomLog>),
     /// Multiple log entries
     Multiple(Vec<CustomLog>),
 }

@@ -447,10 +447,10 @@ impl PortkeyConfig {
         }
 
         // Optional: cache force refresh
-        if let Ok(cache_force_refresh_str) = std::env::var("PORTKEY_CACHE_FORCE_REFRESH") {
-            if let Ok(cache_force_refresh) = cache_force_refresh_str.parse::<bool>() {
-                builder = builder.with_cache_force_refresh(cache_force_refresh);
-            }
+        if let Ok(cache_force_refresh_str) = std::env::var("PORTKEY_CACHE_FORCE_REFRESH")
+            && let Ok(cache_force_refresh) = cache_force_refresh_str.parse::<bool>()
+        {
+            builder = builder.with_cache_force_refresh(cache_force_refresh);
         }
 
         let config = builder.build()?;
