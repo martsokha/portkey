@@ -28,13 +28,16 @@ portkey-sdk = { version = "0.1", features = [] }
 ### Builder Configuration
 
 ```rust,no_run
-use portkey_sdk::{PortkeyConfig, Result};
+use portkey_sdk::{AuthMethod, PortkeyConfig, Result};
 use std::time::Duration;
 
 #[tokio::main]
 async fn main() -> Result<()> {
     let client = PortkeyConfig::builder()
-        .with_api_key("your-api-key")
+        .with_api_key("your-portkey-api-key")
+        .with_auth_method(AuthMethod::VirtualKey {
+            virtual_key: "your-virtual-key".to_string(),
+        })
         .with_base_url("https://api.portkey.ai/v1")
         .with_timeout(Duration::from_secs(60))
         .build_client()?;
@@ -70,19 +73,26 @@ async fn main() -> Result<()> {
 For advanced use cases, you can provide your own configured `reqwest::Client`:
 
 ```rust,no_run
-use portkey_sdk::PortkeyConfig;
+use portkey_sdk::{AuthMethod, PortkeyConfig, Result};
 use reqwest::Client;
 use std::time::Duration;
 
-let custom_client = Client::builder()
-    .timeout(Duration::from_secs(60))
-    .pool_max_idle_per_host(10)
-    .build()?;
+fn main() -> Result<()> {
+    let custom_client = Client::builder()
+        .timeout(Duration::from_secs(60))
+        .pool_max_idle_per_host(10)
+        .build()?;
 
-let client = PortkeyConfig::builder()
-    .with_api_key("your-api-key")
-    .with_client(custom_client)
-    .build_client()?;
+    let client = PortkeyConfig::builder()
+        .with_api_key("your-api-key")
+        .with_auth_method(AuthMethod::VirtualKey {
+            virtual_key: "your-virtual-key".to_string(),
+        })
+        .with_client(custom_client)
+        .build_client()?;
+
+    Ok(())
+}
 ```
 
 ## Optional Features

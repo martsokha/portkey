@@ -8,7 +8,7 @@ use std::sync::Arc;
 
 use reqwest::{Client, RequestBuilder};
 
-use super::config::PortkeyConfig;
+use super::config::{AuthMethod, PortkeyConfig};
 use crate::error::Result;
 
 /// Main Portkey API client for interacting with all Portkey services.
@@ -143,6 +143,57 @@ impl PortkeyClient {
         Self::new(config)
     }
 
+    /// Applies Portkey-specific headers to a request builder.
+    fn apply_portkey_headers(&self, mut builder: RequestBuilder) -> RequestBuilder {
+        // Always add the Portkey API key
+        builder = builder.header("x-portkey-api-key", self.inner.config.api_key());
+
+        // Add authentication method headers
+        match self.inner.config.auth_method() {
+            AuthMethod::VirtualKey { virtual_key } => {
+                builder = builder.header("x-portkey-virtual-key", virtual_key);
+            }
+            AuthMethod::ProviderAuth {
+                provider,
+                authorization,
+                custom_host,
+            } => {
+                builder = builder.header("x-portkey-provider", provider);
+                builder = builder.header("Authorization", authorization);
+                if let Some(host) = custom_host {
+                    builder = builder.header("x-portkey-custom-host", host);
+                }
+            }
+            AuthMethod::Config { config_id } => {
+                builder = builder.header("x-portkey-config", config_id);
+            }
+        }
+
+        // Add optional headers
+        if let Some(trace_id) = self.inner.config.trace_id() {
+            builder = builder.header("x-portkey-trace-id", trace_id);
+        }
+
+        if let Some(metadata) = self.inner.config.metadata() {
+            if let Ok(metadata_json) = serde_json::to_string(metadata) {
+                builder = builder.header("x-portkey-metadata", metadata_json);
+            }
+        }
+
+        if let Some(cache_namespace) = self.inner.config.cache_namespace() {
+            builder = builder.header("x-portkey-cache-namespace", cache_namespace);
+        }
+
+        if let Some(cache_force_refresh) = self.inner.config.cache_force_refresh() {
+            builder = builder.header(
+                "x-portkey-cache-force-refresh",
+                cache_force_refresh.to_string(),
+            );
+        }
+
+        builder
+    }
+
     /// Creates a GET request.
     #[cfg_attr(
         feature = "tracing",
@@ -158,11 +209,13 @@ impl PortkeyClient {
             "Creating HTTP GET request"
         );
 
-        self.inner
+        let builder = self
+            .inner
             .client
             .get(&url)
-            .bearer_auth(self.inner.config.api_key())
-            .timeout(self.inner.config.timeout())
+            .timeout(self.inner.config.timeout());
+
+        self.apply_portkey_headers(builder)
     }
 
     /// Creates a POST request.
@@ -180,11 +233,37 @@ impl PortkeyClient {
             "Creating HTTP POST request"
         );
 
-        self.inner
+        let builder = self
+            .inner
             .client
             .post(&url)
-            .bearer_auth(self.inner.config.api_key())
-            .timeout(self.inner.config.timeout())
+            .timeout(self.inner.config.timeout());
+
+        self.apply_portkey_headers(builder)
+    }
+
+    /// Creates a PUT request.
+    #[cfg_attr(
+        feature = "tracing",
+        tracing::instrument(skip(self), fields(method = "PUT", path, url))
+    )]
+    pub(crate) fn put(&self, path: &str) -> RequestBuilder {
+        let url = format!("{}{}", self.inner.config.base_url(), path);
+
+        #[cfg(feature = "tracing")]
+        tracing::trace!(
+            url = %url,
+            method = "PUT",
+            "Creating HTTP PUT request"
+        );
+
+        let builder = self
+            .inner
+            .client
+            .put(&url)
+            .timeout(self.inner.config.timeout());
+
+        self.apply_portkey_headers(builder)
     }
 
     /// Creates a PATCH request.
@@ -202,11 +281,13 @@ impl PortkeyClient {
             "Creating HTTP PATCH request"
         );
 
-        self.inner
+        let builder = self
+            .inner
             .client
             .patch(&url)
-            .bearer_auth(self.inner.config.api_key())
-            .timeout(self.inner.config.timeout())
+            .timeout(self.inner.config.timeout());
+
+        self.apply_portkey_headers(builder)
     }
 
     /// Creates a DELETE request.
@@ -224,11 +305,13 @@ impl PortkeyClient {
             "Creating HTTP DELETE request"
         );
 
-        self.inner
+        let builder = self
+            .inner
             .client
             .delete(&url)
-            .bearer_auth(self.inner.config.api_key())
-            .timeout(self.inner.config.timeout())
+            .timeout(self.inner.config.timeout());
+
+        self.apply_portkey_headers(builder)
     }
 }
 
