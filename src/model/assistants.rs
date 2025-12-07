@@ -2,6 +2,8 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::HashMap;
 
+use super::chat::ResponseFormat;
+
 /// Request to create an assistant.
 ///
 /// # Example
@@ -168,16 +170,6 @@ pub struct FunctionDefinition {
 
     /// The parameters the functions accepts, described as a JSON Schema object.
     pub parameters: Value,
-}
-
-/// The format of the response.
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(tag = "type")]
-pub enum ResponseFormat {
-    #[serde(rename = "text")]
-    Text,
-    #[serde(rename = "json_object")]
-    JsonObject,
 }
 
 /// Response containing a list of assistants.

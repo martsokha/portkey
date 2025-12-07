@@ -18,11 +18,12 @@ pub trait CompletionsService {
     /// # Example
     ///
     /// ```no_run
-    /// # use portkey_sdk::{PortkeyClient, Result};
+    /// # use portkey_sdk::{PortkeyConfig, PortkeyClient, Result};
     /// # use portkey_sdk::service::CompletionsService;
     /// # use portkey_sdk::model::{CreateCompletionRequest, CompletionPrompt};
     /// # async fn example() -> Result<()> {
-    /// let client = PortkeyClient::from_env()?;
+    /// let config = PortkeyConfig::from_env()?;
+    /// let client = PortkeyClient::new(config)?;
     ///
     /// let request = CreateCompletionRequest {
     ///     model: "gpt-3.5-turbo-instruct".to_string(),

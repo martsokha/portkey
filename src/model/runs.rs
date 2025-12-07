@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
-use super::assistants::{AssistantTool, ResponseFormat};
+use super::assistants::AssistantTool;
+use super::chat::{FunctionCall as ChatFunctionCall, ResponseFormat, ToolChoice as ChatToolChoice};
 
 /// Request to create a run.
 ///
@@ -62,7 +63,7 @@ pub struct CreateRunRequest {
 
     /// Controls which (if any) tool is called by the model.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub tool_choice: Option<ToolChoice>,
+    pub tool_choice: Option<ChatToolChoice>,
 
     /// Specifies the format that the model must output.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -190,7 +191,7 @@ pub struct Run {
     pub truncation_strategy: Option<TruncationStrategy>,
 
     /// Controls which (if any) tool is called by the model.
-    pub tool_choice: Option<ToolChoice>,
+    pub tool_choice: Option<ChatToolChoice>,
 
     /// Specifies the format that the model must output.
     pub response_format: Option<ResponseFormat>,
@@ -225,17 +226,7 @@ pub struct ToolCall {
     pub tool_type: String,
 
     /// The function definition.
-    pub function: FunctionCall,
-}
-
-/// A function call.
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct FunctionCall {
-    /// The name of the function.
-    pub name: String,
-
-    /// The arguments to call the function with.
-    pub arguments: String,
+    pub function: ChatFunctionCall,
 }
 
 /// Error information for a failed run.
@@ -269,23 +260,6 @@ pub enum TruncationStrategy {
     Auto,
     #[serde(rename = "last_messages")]
     LastMessages { last_messages: i32 },
-}
-
-/// Controls which tool is called by the model.
-#[derive(Clone, Debug, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum ToolChoice {
-    Auto(String),
-    None(String),
-    Required(String),
-    Function { function: FunctionToolChoice },
-}
-
-/// Specifies a tool the model should use.
-#[derive(Clone, Debug, Serialize, Deserialize)]
-pub struct FunctionToolChoice {
-    /// The name of the function to call.
-    pub name: String,
 }
 
 /// Response containing a list of runs.
