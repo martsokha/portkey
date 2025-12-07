@@ -6,7 +6,9 @@
 pub use crate::builder::{PortkeyBuilder, PortkeyBuilderError};
 pub use crate::model::*;
 pub use crate::service::{
-    AudioService, ChatService, EmbeddingsService, FeedbackService, ImagesService, LogsService,
-    ModelsService, PromptsService, ResponsesService,
+    AssistantsService, AudioService, BatchesService, ChatService, CompletionsService,
+    EmbeddingsService, FeedbackService, FilesService, FineTuningService, ImagesService,
+    LogsService, MessagesService, ModelsService, ModerationsService, PromptsService,
+    ResponsesService, RunsService, ThreadsService,
 };
 pub use crate::{Error, PortkeyClient, PortkeyConfig, Result};

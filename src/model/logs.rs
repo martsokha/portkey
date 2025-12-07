@@ -198,10 +198,6 @@ pub struct DownloadLogExportResponse {
     pub signed_url: String,
 }
 
-// ============================================================================
-// Insert Log Models
-// ============================================================================
-
 /// HTTP request data for a log entry
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LogRequest {
@@ -293,10 +289,6 @@ pub struct InsertLogResponse {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub log_ids: Option<Vec<String>>,
 }
-
-// ============================================================================
-// Update Log Export Models
-// ============================================================================
 
 /// Request to update a log export
 #[derive(Debug, Clone, Serialize, Deserialize)]
