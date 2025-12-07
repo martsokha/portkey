@@ -98,15 +98,12 @@ portkey-sdk = { version = "0.1", features = ["tracing"] }
 
 ## Examples
 
-The `examples/` directory contains comprehensive usage examples:
+The `examples/` directory contains usage examples:
 
 ```bash
 # Set your API key
 export PORTKEY_API_KEY="your-api-key"
 export PORTKEY_VIRTUAL_KEY="your-virtual-key"
-
-# Run the basic usage example
-cargo run --example basic_usage
 
 # Run the chat completion example
 cargo run --example chat_completion
