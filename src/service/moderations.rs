@@ -8,14 +8,15 @@ use std::future::Future;
 ///
 /// # Example
 ///
-/// ```rust,ignore
-/// use portkey::prelude::*;
+/// ```no_run
+/// # use portkey_sdk::{PortkeyConfig, PortkeyClient, Result};
 ///
-/// #[tokio::main]
-/// async fn main() -> Result<()> {
-///     let client = PortkeyClient::builder()
-///         .api_key("your-api-key")
-///         .build()?;
+
+/// # async fn example() -> Result<()> {
+/// let config = PortkeyConfig::builder()
+///     .with_api_key("your-api-key")
+///     .build()?;
+/// let client = PortkeyClient::new(config)?;
 ///
 ///     let response = client.create_moderation(
 ///         CreateModerationRequest::builder()
@@ -30,14 +31,14 @@ use std::future::Future;
 ///         }
 ///     }
 ///     Ok(())
-/// }
+/// # }
 /// ```
 pub trait ModerationsService {
     /// Classifies if text is potentially harmful.
     ///
     /// # Example
     ///
-    /// ```rust,ignore
+    /// ```no_run
     /// let response = client.create_moderation(
     ///     CreateModerationRequest::builder()
     ///         .input("Sample text to moderate")
@@ -56,7 +57,7 @@ pub trait ModerationsService {
     ///             println!("  - Violence (score: {})", result.category_scores.violence);
     ///         }
     ///     }
-    /// }
+    /// # }
     /// ```
     fn create_moderation(
         &self,

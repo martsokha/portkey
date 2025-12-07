@@ -11,14 +11,15 @@ use std::future::Future;
 ///
 /// # Example
 ///
-/// ```rust,ignore
-/// use portkey::prelude::*;
+/// ```no_run
+/// # use portkey_sdk::{PortkeyConfig, PortkeyClient, Result};
 ///
-/// #[tokio::main]
-/// async fn main() -> Result<()> {
-///     let client = PortkeyClient::builder()
-///         .api_key("your-api-key")
-///         .build()?;
+
+/// # async fn example() -> Result<()> {
+/// let config = PortkeyConfig::builder()
+///     .with_api_key("your-api-key")
+///     .build()?;
+/// let client = PortkeyClient::new(config)?;
 ///
 ///     let run = client.create_run(
 ///         "thread_abc123",
@@ -30,7 +31,7 @@ use std::future::Future;
 ///
 ///     println!("Created run: {}", run.id);
 ///     Ok(())
-/// }
+/// # }
 /// ```
 pub trait RunsService {
     /// Create a run.

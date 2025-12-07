@@ -8,42 +8,49 @@ use std::future::Future;
 ///
 /// # Example
 ///
-/// ```rust,ignore
-/// use portkey::prelude::*;
+/// ```no_run
+/// # use portkey_sdk::{PortkeyConfig, PortkeyClient, Result};
+/// # use portkey_sdk::service::BatchesService;
+/// # use portkey_sdk::model::CreateBatchRequest;
+/// # async fn example() -> Result<()> {
+/// let config = PortkeyConfig::builder()
+///     .with_api_key("your-api-key")
+///     .build()?;
+/// let client = PortkeyClient::new(config)?;
 ///
-/// #[tokio::main]
-/// async fn main() -> Result<()> {
-///     let client = PortkeyClient::builder()
-///         .api_key("your-api-key")
-///         .build()?;
+/// let batch = client.create_batch(
+///     CreateBatchRequest {
+///         input_file_id: "file-abc123".to_string(),
+///         endpoint: "/v1/chat/completions".to_string(),
+///         completion_window: "24h".to_string(),
+///         metadata: None,
+///     }
+/// ).await?;
 ///
-///     let batch = client.create_batch(
-///         CreateBatchRequest::builder()
-///             .input_file_id("file-abc123")
-///             .endpoint("/v1/chat/completions")
-///             .completion_window("24h")
-///             .build()
-///             .unwrap()
-///     ).await?;
-///
-///     println!("Created batch: {}", batch.id);
-///     Ok(())
-/// }
+/// println!("Created batch: {}", batch.id);
+/// # Ok(())
+/// # }
 /// ```
 pub trait BatchesService {
     /// Creates and executes a batch from an uploaded file of requests.
     ///
     /// # Example
     ///
-    /// ```rust,ignore
+    /// ```no_run
+    /// # use portkey_sdk::{PortkeyClient, Result};
+    /// # use portkey_sdk::service::BatchesService;
+    /// # use portkey_sdk::model::CreateBatchRequest;
+    /// # async fn example(client: PortkeyClient) -> Result<()> {
     /// let batch = client.create_batch(
-    ///     CreateBatchRequest::builder()
-    ///         .input_file_id("file-abc123")
-    ///         .endpoint("/v1/chat/completions")
-    ///         .completion_window("24h")
-    ///         .build()
-    ///         .unwrap()
+    ///     CreateBatchRequest {
+    ///         input_file_id: "file-abc123".to_string(),
+    ///         endpoint: "/v1/chat/completions".to_string(),
+    ///         completion_window: "24h".to_string(),
+    ///         metadata: None,
+    ///     }
     /// ).await?;
+    /// # Ok(())
+    /// # }
     /// ```
     fn create_batch(&self, request: CreateBatchRequest) -> impl Future<Output = Result<Batch>>;
 
@@ -55,9 +62,14 @@ pub trait BatchesService {
     ///
     /// # Example
     ///
-    /// ```rust,ignore
+    /// ```no_run
+    /// # use portkey_sdk::{PortkeyClient, Result};
+    /// # use portkey_sdk::service::BatchesService;
+    /// # async fn example(client: PortkeyClient) -> Result<()> {
     /// let batch = client.retrieve_batch("batch_abc123").await?;
     /// println!("Status: {}", batch.status);
+    /// # Ok(())
+    /// # }
     /// ```
     fn retrieve_batch(&self, batch_id: &str) -> impl Future<Output = Result<Batch>>;
 
@@ -69,9 +81,14 @@ pub trait BatchesService {
     ///
     /// # Example
     ///
-    /// ```rust,ignore
+    /// ```no_run
+    /// # use portkey_sdk::{PortkeyClient, Result};
+    /// # use portkey_sdk::service::BatchesService;
+    /// # async fn example(client: PortkeyClient) -> Result<()> {
     /// let batch = client.cancel_batch("batch_abc123").await?;
     /// println!("Cancelled batch: {}", batch.id);
+    /// # Ok(())
+    /// # }
     /// ```
     fn cancel_batch(&self, batch_id: &str) -> impl Future<Output = Result<Batch>>;
 
@@ -84,11 +101,11 @@ pub trait BatchesService {
     ///
     /// # Example
     ///
-    /// ```rust,ignore
+    /// ```no_run
     /// let batches = client.list_batches(None, Some(10)).await?;
     /// for batch in batches.data {
     ///     println!("Batch {}: {}", batch.id, batch.status);
-    /// }
+    /// # }
     /// ```
     fn list_batches(
         &self,

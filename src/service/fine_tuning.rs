@@ -11,41 +11,48 @@ use std::future::Future;
 ///
 /// # Example
 ///
-/// ```rust,ignore
-/// use portkey::prelude::*;
+/// ```no_run
+/// # use portkey_sdk::{PortkeyConfig, PortkeyClient, Result};
+/// # use portkey_sdk::service::FineTuningService;
+/// # use portkey_sdk::model::CreateFineTuningJobRequest;
+/// # async fn example() -> Result<()> {
+/// let config = PortkeyConfig::builder()
+///     .with_api_key("your-api-key")
+///     .build()?;
+/// let client = PortkeyClient::new(config)?;
 ///
-/// #[tokio::main]
-/// async fn main() -> Result<()> {
-///     let client = PortkeyClient::builder()
-///         .api_key("your-api-key")
-///         .build()?;
+/// let job = client.create_fine_tuning_job(
+///     CreateFineTuningJobRequest {
+///         model: "gpt-3.5-turbo".to_string(),
+///         training_file: "file-abc123".to_string(),
+///         ..Default::default()
+///     }
+/// ).await?;
 ///
-///     let job = client.create_fine_tuning_job(
-///         CreateFineTuningJobRequest::builder()
-///             .model("gpt-3.5-turbo")
-///             .training_file("file-abc123")
-///             .build()
-///             .unwrap()
-///     ).await?;
-///
-///     println!("Created fine-tuning job: {}", job.id);
-///     Ok(())
-/// }
+/// println!("Created fine-tuning job: {}", job.id);
+/// # Ok(())
+/// # }
 /// ```
 pub trait FineTuningService {
     /// Creates a fine-tuning job which begins the process of creating a new model from a given dataset.
     ///
     /// # Example
     ///
-    /// ```rust,ignore
+    /// ```no_run
+    /// # use portkey_sdk::{PortkeyConfig, PortkeyClient, Result};
+    /// # use portkey_sdk::service::FineTuningService;
+    /// # use portkey_sdk::model::CreateFineTuningJobRequest;
+    /// # async fn example(client: PortkeyClient) -> Result<()> {
     /// let job = client.create_fine_tuning_job(
-    ///     CreateFineTuningJobRequest::builder()
-    ///         .model("gpt-3.5-turbo")
-    ///         .training_file("file-abc123")
-    ///         .suffix("my-custom-model")
-    ///         .build()
-    ///         .unwrap()
+    ///     CreateFineTuningJobRequest {
+    ///         model: "gpt-3.5-turbo".to_string(),
+    ///         training_file: "file-abc123".to_string(),
+    ///         suffix: Some("my-custom-model".to_string()),
+    ///         ..Default::default()
+    ///     }
     /// ).await?;
+    /// # Ok(())
+    /// # }
     /// ```
     fn create_fine_tuning_job(
         &self,
@@ -61,11 +68,16 @@ pub trait FineTuningService {
     ///
     /// # Example
     ///
-    /// ```rust,ignore
+    /// ```no_run
+    /// # use portkey_sdk::{PortkeyClient, Result};
+    /// # use portkey_sdk::service::FineTuningService;
+    /// # async fn example(client: PortkeyClient) -> Result<()> {
     /// let jobs = client.list_fine_tuning_jobs(None, Some(10)).await?;
     /// for job in jobs.data {
     ///     println!("Job {}: {}", job.id, job.status);
     /// }
+    /// # Ok(())
+    /// # }
     /// ```
     fn list_fine_tuning_jobs(
         &self,
@@ -81,9 +93,14 @@ pub trait FineTuningService {
     ///
     /// # Example
     ///
-    /// ```rust,ignore
+    /// ```no_run
+    /// # use portkey_sdk::{PortkeyClient, Result};
+    /// # use portkey_sdk::service::FineTuningService;
+    /// # async fn example(client: PortkeyClient) -> Result<()> {
     /// let job = client.retrieve_fine_tuning_job("ftjob-abc123").await?;
     /// println!("Status: {}", job.status);
+    /// # Ok(())
+    /// # }
     /// ```
     fn retrieve_fine_tuning_job(
         &self,
@@ -98,9 +115,14 @@ pub trait FineTuningService {
     ///
     /// # Example
     ///
-    /// ```rust,ignore
+    /// ```no_run
+    /// # use portkey_sdk::{PortkeyClient, Result};
+    /// # use portkey_sdk::service::FineTuningService;
+    /// # async fn example(client: PortkeyClient) -> Result<()> {
     /// let job = client.cancel_fine_tuning_job("ftjob-abc123").await?;
     /// println!("Cancelled job: {}", job.id);
+    /// # Ok(())
+    /// # }
     /// ```
     fn cancel_fine_tuning_job(
         &self,
@@ -117,11 +139,16 @@ pub trait FineTuningService {
     ///
     /// # Example
     ///
-    /// ```rust,ignore
+    /// ```no_run
+    /// # use portkey_sdk::{PortkeyClient, Result};
+    /// # use portkey_sdk::service::FineTuningService;
+    /// # async fn example(client: PortkeyClient) -> Result<()> {
     /// let events = client.list_fine_tuning_job_events("ftjob-abc123", None, Some(10)).await?;
     /// for event in events.data {
     ///     println!("[{}] {}", event.level, event.message);
     /// }
+    /// # Ok(())
+    /// # }
     /// ```
     fn list_fine_tuning_job_events(
         &self,
@@ -140,11 +167,16 @@ pub trait FineTuningService {
     ///
     /// # Example
     ///
-    /// ```rust,ignore
+    /// ```no_run
+    /// # use portkey_sdk::{PortkeyClient, Result};
+    /// # use portkey_sdk::service::FineTuningService;
+    /// # async fn example(client: PortkeyClient) -> Result<()> {
     /// let checkpoints = client.list_fine_tuning_job_checkpoints("ftjob-abc123", None, Some(5)).await?;
     /// for checkpoint in checkpoints.data {
     ///     println!("Checkpoint at step {}", checkpoint.step_number);
     /// }
+    /// # Ok(())
+    /// # }
     /// ```
     fn list_fine_tuning_job_checkpoints(
         &self,
