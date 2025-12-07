@@ -10,19 +10,15 @@ compile_error!(
      Example: cargo build --features rustls-tls"
 );
 
-pub mod client;
+mod client;
 mod error;
 pub mod model;
 #[doc(hidden)]
 pub mod prelude;
 pub mod service;
 
-pub use client::{AuthMethod, PortkeyBuilder, PortkeyBuilderError, PortkeyClient, PortkeyConfig};
+pub use client::{PortkeyClient, PortkeyConfig, builder};
 pub use error::{Error, Result};
-pub use service::{
-    AudioService, ChatService, EmbeddingsService, FeedbackService, ImagesService, LogsService,
-    ModelsService, PromptsService, ResponsesService,
-};
 
 /// Tracing target for client-level operations (HTTP requests, client creation).
 #[cfg(feature = "tracing")]

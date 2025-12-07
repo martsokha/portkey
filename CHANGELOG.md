@@ -10,15 +10,7 @@ and this project adheres to
 
 ### Added
 
-- Initial implementation of Portkey Rust SDK
-- `PortkeyConfig` and `PortkeyBuilder` for client configuration
-- `PortkeyClient` with Arc-based cloning for multi-threaded usage
-- Support for custom reqwest HTTP client
-- Builder pattern support for configuration via `derive_builder`
-- Environment variable configuration support
-- Optional `tracing` feature for logging support
-- Optional `strum` feature for enum string conversions
-- Comprehensive error handling with `thiserror`
+- N/A
 
 ### Changed
 
@@ -40,4 +32,18 @@ and this project adheres to
 
 - N/A
 
+## [0.1.0] - 2025-11-28
+
+### Added
+
+- Initial implementation of Portkey Rust SDK
+- Full support for Portkey REST API endpoints
+- `PortkeyConfig` and `PortkeyBuilder` for client configuration
+- Service modules for managing resources
+- Comprehensive type-safe models for all API resources
+- Builder pattern support for configuration via `derive_builder`
+- Optional `tracing` feature for logging support
+- Optional `strum` feature for enum string conversions
+
 [Unreleased]: https://github.com/martsokha/portkey/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/martsokha/portkey/releases/tag/v0.1.0

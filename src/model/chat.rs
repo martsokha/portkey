@@ -66,6 +66,58 @@ pub enum ChatCompletionRequestMessage {
     },
 }
 
+impl ChatCompletionRequestMessage {
+    /// Creates a system message.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use portkey_sdk::model::ChatCompletionRequestMessage;
+    ///
+    /// let msg = ChatCompletionRequestMessage::system("You are a helpful assistant.");
+    /// ```
+    pub fn system(content: impl Into<String>) -> Self {
+        Self::System {
+            content: content.into(),
+            name: None,
+        }
+    }
+
+    /// Creates a user message with text content.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use portkey_sdk::model::ChatCompletionRequestMessage;
+    ///
+    /// let msg = ChatCompletionRequestMessage::user("Hello!");
+    /// ```
+    pub fn user(content: impl Into<String>) -> Self {
+        Self::User {
+            content: ChatCompletionUserMessageContent::Text(content.into()),
+            name: None,
+        }
+    }
+
+    /// Creates an assistant message.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use portkey_sdk::model::ChatCompletionRequestMessage;
+    ///
+    /// let msg = ChatCompletionRequestMessage::assistant("Hello! How can I help you?");
+    /// ```
+    pub fn assistant(content: impl Into<String>) -> Self {
+        Self::Assistant {
+            content: Some(content.into()),
+            name: None,
+            tool_calls: None,
+            function_call: None,
+        }
+    }
+}
+
 /// Content of a user message (can be text or multimodal)
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -330,6 +382,53 @@ pub struct ChatCompletionRequest {
     /// A unique identifier for the end-user
     #[serde(skip_serializing_if = "Option::is_none")]
     pub user: Option<String>,
+}
+
+impl ChatCompletionRequest {
+    /// Creates a new chat completion request with the minimum required fields.
+    ///
+    /// # Arguments
+    ///
+    /// * `model` - The model ID to use (e.g., "gpt-4o", "claude-3-5-sonnet-20241022")
+    /// * `messages` - The conversation messages
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use portkey_sdk::model::{ChatCompletionRequest, ChatCompletionRequestMessage};
+    ///
+    /// let request = ChatCompletionRequest::new(
+    ///     "gpt-4o",
+    ///     vec![
+    ///         ChatCompletionRequestMessage::user("Hello!"),
+    ///     ],
+    /// );
+    /// ```
+    pub fn new(model: impl Into<String>, messages: Vec<ChatCompletionRequestMessage>) -> Self {
+        Self {
+            model: model.into(),
+            messages,
+            frequency_penalty: None,
+            logit_bias: None,
+            logprobs: None,
+            top_logprobs: None,
+            max_tokens: None,
+            n: None,
+            presence_penalty: None,
+            response_format: None,
+            seed: None,
+            stop: None,
+            stream: None,
+            stream_options: None,
+            thinking: None,
+            temperature: None,
+            top_p: None,
+            tools: None,
+            tool_choice: None,
+            parallel_tool_calls: None,
+            user: None,
+        }
+    }
 }
 
 /// Stop sequences (can be a string or array of strings)

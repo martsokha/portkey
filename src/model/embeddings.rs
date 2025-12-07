@@ -84,6 +84,53 @@ pub struct CreateEmbeddingRequest {
     pub user: Option<String>,
 }
 
+impl CreateEmbeddingRequest {
+    /// Creates a new embedding request with the minimum required fields.
+    ///
+    /// # Arguments
+    ///
+    /// * `model` - The model ID to use (e.g., "text-embedding-ada-002", "text-embedding-3-small")
+    /// * `input` - The input text or texts to embed
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use portkey_sdk::model::{CreateEmbeddingRequest, EmbeddingInput};
+    ///
+    /// let request = CreateEmbeddingRequest::new(
+    ///     "text-embedding-ada-002",
+    ///     "Hello, world!",
+    /// );
+    /// ```
+    pub fn new(model: impl Into<String>, input: impl Into<EmbeddingInput>) -> Self {
+        Self {
+            model: model.into(),
+            input: input.into(),
+            encoding_format: None,
+            dimensions: None,
+            user: None,
+        }
+    }
+}
+
+impl From<String> for EmbeddingInput {
+    fn from(s: String) -> Self {
+        EmbeddingInput::String(s)
+    }
+}
+
+impl From<&str> for EmbeddingInput {
+    fn from(s: &str) -> Self {
+        EmbeddingInput::String(s.to_string())
+    }
+}
+
+impl From<Vec<String>> for EmbeddingInput {
+    fn from(v: Vec<String>) -> Self {
+        EmbeddingInput::StringArray(v)
+    }
+}
+
 /// An embedding vector returned by the embedding endpoint.
 ///
 /// # Example

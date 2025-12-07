@@ -2,18 +2,16 @@
 
 [package]
 name = "portkey-sdk"
-description = "PortKey SDK for Rust"
+description = "Unofficial Rust SDK for Portkey AI Gateway: route, observe, and optimize LLM requests across 200+ providers"
 readme = "./README.md"
 
 version = "0.1.0"
 rust-version = "1.91"
 edition = "2024"
 license = "MIT"
-publish = false
+publish = true
 
-authors = [
-    "Oleh Martsokha <o.martsokha@gmail.com>",
-]
+authors = ["Oleh Martsokha <o.martsokha@gmail.com>"]
 repository = "https://github.com/martsokha/portkey"
 homepage = "https://github.com/martsokha/portkey"
 documentation = "https://docs.rs/portkey-sdk"
@@ -24,17 +22,15 @@ rustdoc-args = ["--cfg", "docsrs"]
 
 [features]
 ## Default features enabled by default
-default = ["rustls-tls"]
+default = ["rustls-tls", "strum"]
 
 ## Enable rustls-tls for HTTPS requests (default)
 rustls-tls = ["reqwest/rustls-tls"]
-
 ## Enable native-tls for HTTPS requests
 native-tls = ["reqwest/native-tls"]
 
 ## Enable tracing support for HTTP requests and client operations
 tracing = ["dep:tracing"]
-
 ## Enable string conversions for enums via strum derive macros
 strum = ["dep:strum"]
 

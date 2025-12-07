@@ -7,7 +7,14 @@
 //! Set your API key as an environment variable:
 //! ```bash
 //! export PORTKEY_API_KEY=your-api-key
-//! cargo run --example basic_usage
+//! cargo run --example basic_usage --features tracing
+//! ```
+//!
+//! # Tracing
+//!
+//! Enable tracing output:
+//! ```bash
+//! RUST_LOG=portkey_sdk=debug cargo run --example basic_usage --features tracing
 //! ```
 
 use portkey_sdk::{PortkeyClient, PortkeyConfig, Result};
@@ -15,6 +22,14 @@ use std::time::Duration;
 
 #[tokio::main]
 async fn main() -> Result<()> {
+    // Initialize tracing subscriber for logging
+    tracing_subscriber::fmt()
+        .with_env_filter(
+            tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("info")),
+        )
+        .init();
+
     println!("Portkey SDK - Basic Usage Example\n");
 
     // Method 1: Create client from environment variable

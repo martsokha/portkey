@@ -1,16 +1,35 @@
-use portkey_sdk::model::{
-    ChatCompletionRequest, ChatCompletionRequestMessage, ChatCompletionUserMessageContent,
-};
+//! Chat completion example demonstrating authentication methods.
+//!
+//! This example shows how to use different authentication methods with the Portkey SDK.
+//!
+//! # Running this example
+//!
+//! ```bash
+//! cargo run --example chat_completion --features tracing
+//! ```
+//!
+//! # Tracing
+//!
+//! Enable tracing output:
+//! ```bash
+//! RUST_LOG=portkey_sdk=debug cargo run --example chat_completion --features tracing
+//! ```
+
+use portkey_sdk::model::{ChatCompletionRequest, ChatCompletionRequestMessage};
 use portkey_sdk::service::ChatService;
 use portkey_sdk::{AuthMethod, PortkeyConfig, Result};
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    // Create client using environment variables or builder
-    // Option 1: From environment (PORTKEY_API_KEY, PORTKEY_VIRTUAL_KEY, etc.)
-    // let client = PortkeyClient::from_env()?;
+    // Initialize tracing subscriber for logging
+    tracing_subscriber::fmt()
+        .with_env_filter(
+            tracing_subscriber::EnvFilter::try_from_default_env()
+                .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("info")),
+        )
+        .init();
 
-    // Option 2: Using builder with virtual key
+    // Create client with virtual key authentication
     let client = PortkeyConfig::builder()
         .with_api_key("your-portkey-api-key")
         .with_auth_method(AuthMethod::VirtualKey {
@@ -18,80 +37,28 @@ async fn main() -> Result<()> {
         })
         .build_client()?;
 
-    // Option 3: Using provider authentication
-    // let client = PortkeyConfig::builder()
-    //     .with_api_key("your-portkey-api-key")
-    //     .with_auth_method(AuthMethod::ProviderAuth {
-    //         provider: "openai".to_string(),
-    //         authorization: "Bearer sk-...".to_string(),
-    //         custom_host: None,
-    //     })
-    //     .build_client()?;
-
-    // Option 4: Using config-based routing
-    // let client = PortkeyConfig::builder()
-    //     .with_api_key("your-portkey-api-key")
-    //     .with_auth_method(AuthMethod::Config {
-    //         config_id: "pc-config-123".to_string(),
-    //     })
-    //     .build_client()?;
-
-    // Create a chat completion request
-    let request = ChatCompletionRequest {
-        model: "gpt-4o".to_string(),
-        messages: vec![
-            ChatCompletionRequestMessage::System {
-                content: "You are a helpful assistant.".to_string(),
-                name: None,
-            },
-            ChatCompletionRequestMessage::User {
-                content: ChatCompletionUserMessageContent::Text(
-                    "What is the capital of France?".to_string(),
-                ),
-                name: None,
-            },
+    // Create a chat completion request using the builder methods
+    let mut request = ChatCompletionRequest::new(
+        "gpt-4o",
+        vec![
+            ChatCompletionRequestMessage::system("You are a helpful assistant."),
+            ChatCompletionRequestMessage::user("What is the capital of France?"),
         ],
-        temperature: Some(0.7),
-        max_tokens: Some(100),
-        frequency_penalty: None,
-        logit_bias: None,
-        logprobs: None,
-        top_logprobs: None,
-        n: None,
-        presence_penalty: None,
-        response_format: None,
-        seed: None,
-        stop: None,
-        stream: None,
-        stream_options: None,
-        thinking: None,
-        top_p: None,
-        tools: None,
-        tool_choice: None,
-        parallel_tool_calls: None,
-        user: None,
-    };
+    );
+    request.temperature = Some(0.7);
+    request.max_tokens = Some(100);
 
     // Send the request
     let response = client.create_chat_completion(request).await?;
 
     // Print the response
-    println!("Response ID: {}", response.id);
-    println!("Model: {}", response.model);
-    println!("Choices:");
-    for (i, choice) in response.choices.iter().enumerate() {
-        println!("  Choice {}:", i);
-        println!("    Finish Reason: {}", choice.finish_reason);
-        if let Some(content) = &choice.message.content {
-            println!("    Content: {}", content);
-        }
-    }
+    println!(
+        "Response: {}",
+        response.choices[0].message.content.as_ref().unwrap()
+    );
 
     if let Some(usage) = response.usage {
-        println!("\nUsage:");
-        println!("  Prompt tokens: {}", usage.prompt_tokens);
-        println!("  Completion tokens: {}", usage.completion_tokens);
-        println!("  Total tokens: {}", usage.total_tokens);
+        println!("Tokens used: {}", usage.total_tokens);
     }
 
     Ok(())
