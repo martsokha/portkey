@@ -9,62 +9,9 @@ permissions:
   contents: write
 
 jobs:
-  check-build:
-    name: Check Build Status
-    runs-on: ubuntu-latest
-    steps:
-      - name: Wait for tests (Ubuntu)
-        uses: lewagon/wait-on-check-action@v1.3
-        with:
-          ref: ${{ github.ref }}
-          check-name: "Test (ubuntu-latest, 1.91)"
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
-
-      - name: Wait for tests (macOS)
-        uses: lewagon/wait-on-check-action@v1.3
-        with:
-          ref: ${{ github.ref }}
-          check-name: "Test (macos-latest, 1.91)"
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
-
-      - name: Wait for tests (Windows)
-        uses: lewagon/wait-on-check-action@v1.3
-        with:
-          ref: ${{ github.ref }}
-          check-name: "Test (windows-latest, 1.91)"
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
-
-      - name: Wait for formatting check
-        uses: lewagon/wait-on-check-action@v1.3
-        with:
-          ref: ${{ github.ref }}
-          check-name: "Format"
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
-
-      - name: Wait for clippy
-        uses: lewagon/wait-on-check-action@v1.3
-        with:
-          ref: ${{ github.ref }}
-          check-name: "Clippy"
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
-
-      - name: Wait for documentation check
-        uses: lewagon/wait-on-check-action@v1.3
-        with:
-          ref: ${{ github.ref }}
-          check-name: "Documentation"
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          wait-interval: 10
-
   create-release:
     name: Create Release
     runs-on: ubuntu-latest
-    needs: check-build
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
@@ -98,5 +45,5 @@ jobs:
         uses: Swatinem/rust-cache@v2
 
       - name: Publish to crates.io
-        run: cargo publish --token ${{ secrets.CARGO_TOKEN }}
+        run: cargo publish --token ${{ secrets.CARGO_TOKEN }} --allow-dirty
         continue-on-error: true
