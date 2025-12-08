@@ -1,11 +1,10 @@
-use crate::{
-    PortkeyClient, Result,
-    model::{
-        CreateMessageRequest, ListMessageFilesResponse, ListMessagesResponse, Message, MessageFile,
-        ModifyMessageRequest,
-    },
-};
 use std::future::Future;
+
+use crate::model::{
+    CreateMessageRequest, ListMessageFilesResponse, ListMessagesResponse, Message, MessageFile,
+    ModifyMessageRequest, PaginationParams,
+};
+use crate::{PortkeyClient, Result};
 
 /// Service for managing messages in threads.
 ///
@@ -13,8 +12,6 @@ use std::future::Future;
 ///
 /// ```no_run
 /// # use portkey_sdk::{PortkeyConfig, PortkeyClient, Result};
-///
-
 /// # async fn example() -> Result<()> {
 /// let config = PortkeyConfig::builder()
 ///     .with_api_key("your-api-key")
@@ -61,10 +58,7 @@ pub trait MessagesService {
     fn list_messages(
         &self,
         thread_id: &str,
-        limit: Option<i32>,
-        order: Option<&str>,
-        after: Option<&str>,
-        before: Option<&str>,
+        params: PaginationParams,
     ) -> impl Future<Output = Result<ListMessagesResponse>>;
 
     /// Retrieves a message file.
@@ -80,10 +74,7 @@ pub trait MessagesService {
         &self,
         thread_id: &str,
         message_id: &str,
-        limit: Option<i32>,
-        order: Option<&str>,
-        after: Option<&str>,
-        before: Option<&str>,
+        params: PaginationParams,
     ) -> impl Future<Output = Result<ListMessageFilesResponse>>;
 }
 
@@ -176,10 +167,7 @@ impl MessagesService for PortkeyClient {
     async fn list_messages(
         &self,
         thread_id: &str,
-        limit: Option<i32>,
-        order: Option<&str>,
-        after: Option<&str>,
-        before: Option<&str>,
+        params: PaginationParams<'_>,
     ) -> Result<ListMessagesResponse> {
         #[cfg(feature = "tracing")]
         tracing::debug!(
@@ -188,28 +176,16 @@ impl MessagesService for PortkeyClient {
             "Listing messages"
         );
 
-        let mut url = format!("/threads/{}/messages", thread_id);
-        let mut params = Vec::new();
+        let query_params = params.to_query_params();
+        let query_params_refs: Vec<(&str, &str)> =
+            query_params.iter().map(|(k, v)| (*k, v.as_str())).collect();
 
-        if let Some(limit) = limit {
-            params.push(format!("limit={}", limit));
-        }
-        if let Some(order) = order {
-            params.push(format!("order={}", order));
-        }
-        if let Some(after) = after {
-            params.push(format!("after={}", after));
-        }
-        if let Some(before) = before {
-            params.push(format!("before={}", before));
-        }
+        let url = self.build_url(
+            &format!("/threads/{}/messages", thread_id),
+            &query_params_refs,
+        );
 
-        if !params.is_empty() {
-            url.push_str("?");
-            url.push_str(&params.join("&"));
-        }
-
-        let response = self.get(&url).send().await?;
+        let response = self.get(url.as_str()).send().await?;
         let response = response.error_for_status()?;
         let messages: ListMessagesResponse = response.json().await?;
 
@@ -260,10 +236,7 @@ impl MessagesService for PortkeyClient {
         &self,
         thread_id: &str,
         message_id: &str,
-        limit: Option<i32>,
-        order: Option<&str>,
-        after: Option<&str>,
-        before: Option<&str>,
+        params: PaginationParams<'_>,
     ) -> Result<ListMessageFilesResponse> {
         #[cfg(feature = "tracing")]
         tracing::debug!(
@@ -273,28 +246,16 @@ impl MessagesService for PortkeyClient {
             "Listing message files"
         );
 
-        let mut url = format!("/threads/{}/messages/{}/files", thread_id, message_id);
-        let mut params = Vec::new();
+        let query_params = params.to_query_params();
+        let query_params_refs: Vec<(&str, &str)> =
+            query_params.iter().map(|(k, v)| (*k, v.as_str())).collect();
 
-        if let Some(limit) = limit {
-            params.push(format!("limit={}", limit));
-        }
-        if let Some(order) = order {
-            params.push(format!("order={}", order));
-        }
-        if let Some(after) = after {
-            params.push(format!("after={}", after));
-        }
-        if let Some(before) = before {
-            params.push(format!("before={}", before));
-        }
+        let url = self.build_url(
+            &format!("/threads/{}/messages/{}/files", thread_id, message_id),
+            &query_params_refs,
+        );
 
-        if !params.is_empty() {
-            url.push_str("?");
-            url.push_str(&params.join("&"));
-        }
-
-        let response = self.get(&url).send().await?;
+        let response = self.get(url.as_str()).send().await?;
         let response = response.error_for_status()?;
         let files: ListMessageFilesResponse = response.json().await?;
 

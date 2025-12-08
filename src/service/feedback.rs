@@ -1,10 +1,10 @@
-use crate::client::PortkeyClient;
-use crate::error::Result;
-use crate::model::{CreateFeedbackRequest, FeedbackResponse, UpdateFeedbackRequest};
 use std::future::Future;
 
 #[cfg(feature = "tracing")]
 use crate::TRACING_TARGET_SERVICE;
+use crate::client::PortkeyClient;
+use crate::error::Result;
+use crate::model::{CreateFeedbackRequest, FeedbackResponse, UpdateFeedbackRequest};
 
 /// Service trait for managing feedback.
 ///

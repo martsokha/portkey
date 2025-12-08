@@ -2,8 +2,9 @@
 //!
 //! This module contains models for the legacy completions endpoint.
 
-use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+
+use serde::{Deserialize, Serialize};
 
 /// Request body for creating a completion.
 #[derive(Debug, Clone, Serialize, Deserialize)]

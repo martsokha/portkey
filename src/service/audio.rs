@@ -2,14 +2,16 @@
 //!
 //! This module provides methods for audio transcription using Whisper and GPT models.
 
+use std::future::Future;
+
+use reqwest::multipart::{Form, Part};
+
 use crate::client::PortkeyClient;
 use crate::error::Result;
 use crate::model::{
     CreateSpeechRequest, CreateTranscriptionRequest, CreateTranslationRequest,
     TranscriptionResponse, TranslationResponse,
 };
-use reqwest::multipart::{Form, Part};
-use std::future::Future;
 
 /// Trait for Audio API operations.
 pub trait AudioService {

@@ -1,8 +1,7 @@
-use crate::{
-    PortkeyClient, Result,
-    model::{CreateModerationRequest, ModerationResponse},
-};
 use std::future::Future;
+
+use crate::model::{CreateModerationRequest, ModerationResponse};
+use crate::{PortkeyClient, Result};
 
 /// Service for moderating content.
 ///
@@ -10,8 +9,6 @@ use std::future::Future;
 ///
 /// ```no_run
 /// # use portkey_sdk::{PortkeyConfig, PortkeyClient, Result};
-///
-
 /// # async fn example() -> Result<()> {
 /// let config = PortkeyConfig::builder()
 ///     .with_api_key("your-api-key")

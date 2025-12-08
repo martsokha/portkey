@@ -1,12 +1,11 @@
-use crate::{
-    PortkeyClient, Result,
-    model::{
-        Assistant, AssistantFile, CreateAssistantFileRequest, CreateAssistantRequest,
-        DeleteAssistantFileResponse, DeleteAssistantResponse, ListAssistantFilesResponse,
-        ListAssistantsResponse, ModifyAssistantRequest,
-    },
-};
 use std::future::Future;
+
+use crate::model::{
+    Assistant, AssistantFile, CreateAssistantFileRequest, CreateAssistantRequest,
+    DeleteAssistantFileResponse, DeleteAssistantResponse, ListAssistantFilesResponse,
+    ListAssistantsResponse, ModifyAssistantRequest, PaginationParams,
+};
+use crate::{PortkeyClient, Result};
 
 /// Service for managing assistants.
 ///
@@ -14,8 +13,6 @@ use std::future::Future;
 ///
 /// ```no_run
 /// # use portkey_sdk::{PortkeyConfig, PortkeyClient, Result};
-///
-
 /// # async fn example() -> Result<()> {
 /// let config = PortkeyConfig::builder()
 ///     .with_api_key("your-api-key")
@@ -61,10 +58,7 @@ pub trait AssistantsService {
     /// Returns a list of assistants.
     fn list_assistants(
         &self,
-        limit: Option<i32>,
-        order: Option<&str>,
-        after: Option<&str>,
-        before: Option<&str>,
+        params: PaginationParams,
     ) -> impl Future<Output = Result<ListAssistantsResponse>>;
 
     /// Create an assistant file by attaching a File to an assistant.
@@ -92,10 +86,7 @@ pub trait AssistantsService {
     fn list_assistant_files(
         &self,
         assistant_id: &str,
-        limit: Option<i32>,
-        order: Option<&str>,
-        after: Option<&str>,
-        before: Option<&str>,
+        params: PaginationParams,
     ) -> impl Future<Output = Result<ListAssistantFilesResponse>>;
 }
 
@@ -199,10 +190,7 @@ impl AssistantsService for PortkeyClient {
 
     async fn list_assistants(
         &self,
-        limit: Option<i32>,
-        order: Option<&str>,
-        after: Option<&str>,
-        before: Option<&str>,
+        params: PaginationParams<'_>,
     ) -> Result<ListAssistantsResponse> {
         #[cfg(feature = "tracing")]
         tracing::debug!(
@@ -210,28 +198,13 @@ impl AssistantsService for PortkeyClient {
             "Listing assistants"
         );
 
-        let mut url = "/assistants".to_string();
-        let mut params = Vec::new();
+        let query_params = params.to_query_params();
+        let query_params_refs: Vec<(&str, &str)> =
+            query_params.iter().map(|(k, v)| (*k, v.as_str())).collect();
 
-        if let Some(limit) = limit {
-            params.push(format!("limit={}", limit));
-        }
-        if let Some(order) = order {
-            params.push(format!("order={}", order));
-        }
-        if let Some(after) = after {
-            params.push(format!("after={}", after));
-        }
-        if let Some(before) = before {
-            params.push(format!("before={}", before));
-        }
+        let url = self.build_url("/assistants", &query_params_refs);
 
-        if !params.is_empty() {
-            url.push_str("?");
-            url.push_str(&params.join("&"));
-        }
-
-        let response = self.get(&url).send().await?;
+        let response = self.get(url.as_str()).send().await?;
         let response = response.error_for_status()?;
         let assistants: ListAssistantsResponse = response.json().await?;
 
@@ -334,10 +307,7 @@ impl AssistantsService for PortkeyClient {
     async fn list_assistant_files(
         &self,
         assistant_id: &str,
-        limit: Option<i32>,
-        order: Option<&str>,
-        after: Option<&str>,
-        before: Option<&str>,
+        params: PaginationParams<'_>,
     ) -> Result<ListAssistantFilesResponse> {
         #[cfg(feature = "tracing")]
         tracing::debug!(
@@ -346,28 +316,16 @@ impl AssistantsService for PortkeyClient {
             "Listing assistant files"
         );
 
-        let mut url = format!("/assistants/{}/files", assistant_id);
-        let mut params = Vec::new();
+        let query_params = params.to_query_params();
+        let query_params_refs: Vec<(&str, &str)> =
+            query_params.iter().map(|(k, v)| (*k, v.as_str())).collect();
 
-        if let Some(limit) = limit {
-            params.push(format!("limit={}", limit));
-        }
-        if let Some(order) = order {
-            params.push(format!("order={}", order));
-        }
-        if let Some(after) = after {
-            params.push(format!("after={}", after));
-        }
-        if let Some(before) = before {
-            params.push(format!("before={}", before));
-        }
+        let url = self.build_url(
+            &format!("/assistants/{}/files", assistant_id),
+            &query_params_refs,
+        );
 
-        if !params.is_empty() {
-            url.push_str("?");
-            url.push_str(&params.join("&"));
-        }
-
-        let response = self.get(&url).send().await?;
+        let response = self.get(url.as_str()).send().await?;
         let response = response.error_for_status()?;
         let files: ListAssistantFilesResponse = response.json().await?;
 

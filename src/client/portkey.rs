@@ -9,10 +9,9 @@ use std::sync::Arc;
 use reqwest::{Client, RequestBuilder};
 
 use super::config::{AuthMethod, PortkeyConfig};
-use crate::error::Result;
-
 #[cfg(feature = "tracing")]
 use crate::TRACING_TARGET_CLIENT;
+use crate::error::Result;
 
 /// Main Portkey API client for interacting with all Portkey services.
 ///
@@ -230,9 +229,9 @@ impl PortkeyClient {
 
                     builder = builder.header("x-portkey-metadata", metadata_json);
                 }
-                Err(e) => {
+                Err(_e) => {
                     #[cfg(feature = "tracing")]
-                    tracing::warn!(target: TRACING_TARGET_CLIENT, error = %e, "Failed to serialize metadata, skipping header");
+                    tracing::warn!(target: TRACING_TARGET_CLIENT, error = %_e, "Failed to serialize metadata, skipping header");
                 }
             }
         }
@@ -257,13 +256,26 @@ impl PortkeyClient {
         builder
     }
 
+    /// Builds a URL with the given path and optional query parameters.
+    pub(crate) fn build_url(&self, path: &str, params: &[(&str, &str)]) -> url::Url {
+        let mut url = self.inner.config.base_url().clone();
+        url.set_path(&format!("{}{}", url.path().trim_end_matches('/'), path));
+
+        if !params.is_empty() {
+            url.query_pairs_mut().extend_pairs(params);
+        }
+
+        url
+    }
+
     /// Creates a GET request.
     #[cfg_attr(
         feature = "tracing",
         tracing::instrument(skip(self), fields(method = "GET", path, url))
     )]
     pub(crate) fn get(&self, path: &str) -> RequestBuilder {
-        let url = format!("{}{}", self.inner.config.base_url(), path);
+        let mut url = self.inner.config.base_url().clone();
+        url.set_path(&format!("{}{}", url.path().trim_end_matches('/'), path));
 
         #[cfg(feature = "tracing")]
         tracing::trace!(
@@ -276,7 +288,7 @@ impl PortkeyClient {
         let builder = self
             .inner
             .client
-            .get(&url)
+            .get(url)
             .timeout(self.inner.config.timeout());
 
         self.apply_portkey_headers(builder)
@@ -288,7 +300,8 @@ impl PortkeyClient {
         tracing::instrument(skip(self), fields(method = "POST", path, url))
     )]
     pub(crate) fn post(&self, path: &str) -> RequestBuilder {
-        let url = format!("{}{}", self.inner.config.base_url(), path);
+        let mut url = self.inner.config.base_url().clone();
+        url.set_path(&format!("{}{}", url.path().trim_end_matches('/'), path));
 
         #[cfg(feature = "tracing")]
         tracing::trace!(
@@ -301,7 +314,7 @@ impl PortkeyClient {
         let builder = self
             .inner
             .client
-            .post(&url)
+            .post(url)
             .timeout(self.inner.config.timeout());
 
         self.apply_portkey_headers(builder)
@@ -313,7 +326,8 @@ impl PortkeyClient {
         tracing::instrument(skip(self), fields(method = "PUT", path, url))
     )]
     pub(crate) fn put(&self, path: &str) -> RequestBuilder {
-        let url = format!("{}{}", self.inner.config.base_url(), path);
+        let mut url = self.inner.config.base_url().clone();
+        url.set_path(&format!("{}{}", url.path().trim_end_matches('/'), path));
 
         #[cfg(feature = "tracing")]
         tracing::trace!(
@@ -326,7 +340,7 @@ impl PortkeyClient {
         let builder = self
             .inner
             .client
-            .put(&url)
+            .put(url)
             .timeout(self.inner.config.timeout());
 
         self.apply_portkey_headers(builder)
@@ -338,7 +352,8 @@ impl PortkeyClient {
         tracing::instrument(skip(self), fields(method = "PATCH", path, url))
     )]
     pub(crate) fn patch(&self, path: &str) -> RequestBuilder {
-        let url = format!("{}{}", self.inner.config.base_url(), path);
+        let mut url = self.inner.config.base_url().clone();
+        url.set_path(&format!("{}{}", url.path().trim_end_matches('/'), path));
 
         #[cfg(feature = "tracing")]
         tracing::trace!(
@@ -351,7 +366,7 @@ impl PortkeyClient {
         let builder = self
             .inner
             .client
-            .patch(&url)
+            .patch(url)
             .timeout(self.inner.config.timeout());
 
         self.apply_portkey_headers(builder)
@@ -363,7 +378,8 @@ impl PortkeyClient {
         tracing::instrument(skip(self), fields(method = "DELETE", path, url))
     )]
     pub(crate) fn delete(&self, path: &str) -> RequestBuilder {
-        let url = format!("{}{}", self.inner.config.base_url(), path);
+        let mut url = self.inner.config.base_url().clone();
+        url.set_path(&format!("{}{}", url.path().trim_end_matches('/'), path));
 
         #[cfg(feature = "tracing")]
         tracing::trace!(
@@ -376,7 +392,7 @@ impl PortkeyClient {
         let builder = self
             .inner
             .client
-            .delete(&url)
+            .delete(url)
             .timeout(self.inner.config.timeout());
 
         self.apply_portkey_headers(builder)
@@ -395,8 +411,9 @@ impl fmt::Debug for PortkeyClient {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use std::time::Duration;
+
+    use super::*;
 
     fn create_test_config() -> PortkeyConfig {
         PortkeyConfig::builder()
@@ -414,7 +431,10 @@ mod tests {
         let client = PortkeyClient::new(config)?;
 
         assert_eq!(client.inner.config.api_key(), "test_api_key");
-        assert_eq!(client.inner.config.base_url(), "https://api.portkey.ai/v1");
+        assert_eq!(
+            client.inner.config.base_url().as_str(),
+            "https://api.portkey.ai/v1"
+        );
 
         Ok(())
     }
@@ -428,14 +448,17 @@ mod tests {
                 authorization: "Bearer sk-test".to_string(),
                 custom_host: None,
             })
-            .with_base_url("https://custom.api.com")
+            .with_base_url("https://custom.api.com")?
             .with_timeout(Duration::from_secs(60))
             .build()?;
 
         let client = PortkeyClient::new(config)?;
 
         assert_eq!(client.inner.config.api_key(), "custom_key");
-        assert_eq!(client.inner.config.base_url(), "https://custom.api.com");
+        assert_eq!(
+            client.inner.config.base_url().as_str(),
+            "https://custom.api.com"
+        );
         assert_eq!(client.inner.config.timeout(), Duration::from_secs(60));
 
         Ok(())

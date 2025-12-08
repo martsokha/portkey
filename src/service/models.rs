@@ -2,10 +2,11 @@
 //!
 //! This module provides methods for listing available models through Portkey.
 
+use std::future::Future;
+
 use crate::client::PortkeyClient;
 use crate::error::Result;
 use crate::model::{ListModelsParams, ListModelsResponse};
-use std::future::Future;
 
 /// Trait for Models API operations.
 pub trait ModelsService {

@@ -2,10 +2,11 @@
 //!
 //! Provides access to file upload and management endpoints.
 
+use std::future::Future;
+
 use crate::client::PortkeyClient;
 use crate::error::Result;
 use crate::model::{DeleteFileResponse, FileObject, ListFilesResponse, UploadFileRequest};
-use std::future::Future;
 
 /// Service trait for file operations.
 pub trait FilesService {

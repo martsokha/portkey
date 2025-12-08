@@ -9,12 +9,12 @@ use std::time::Duration;
 
 use derive_builder::Builder;
 use reqwest::Client;
+use url::Url;
 
 use super::portkey::PortkeyClient;
-use crate::error::Result;
-
 #[cfg(feature = "tracing")]
 use crate::TRACING_TARGET_CONFIG;
+use crate::error::Result;
 
 /// Authentication method for Portkey API.
 ///
@@ -143,8 +143,8 @@ pub struct PortkeyConfig {
     /// Base URL for the Portkey API.
     ///
     /// Defaults to the official Portkey API endpoint or can be set to a self-hosted gateway.
-    #[builder(default = "Self::default_base_url()")]
-    base_url: String,
+    #[builder(default = "Self::default_base_url()", setter(custom))]
+    base_url: Url,
 
     /// Timeout for HTTP requests.
     ///
@@ -187,8 +187,14 @@ pub struct PortkeyConfig {
 
 impl PortkeyBuilder {
     /// Returns the default base URL for the Portkey API.
-    fn default_base_url() -> String {
-        "https://api.portkey.ai/v1".to_string()
+    fn default_base_url() -> Url {
+        Url::parse("https://api.portkey.ai/v1").expect("default URL is valid")
+    }
+
+    /// Sets the base URL for the Portkey API.
+    pub fn with_base_url(mut self, base_url: impl AsRef<str>) -> Result<Self> {
+        self.base_url = Some(Url::parse(base_url.as_ref())?);
+        Ok(self)
     }
 
     /// Returns the default timeout.
@@ -297,7 +303,7 @@ impl PortkeyConfig {
     }
 
     /// Returns the base URL.
-    pub fn base_url(&self) -> &str {
+    pub fn base_url(&self) -> &Url {
         &self.base_url
     }
 
@@ -415,7 +421,9 @@ impl PortkeyConfig {
             #[cfg(feature = "tracing")]
             tracing::debug!(target: TRACING_TARGET_CONFIG, base_url = %base_url, "Using custom base URL");
 
-            builder = builder.with_base_url(base_url);
+            builder = builder.with_base_url(base_url).map_err(|e| {
+                PortkeyBuilderError::ValidationError(format!("Invalid base URL: {}", e))
+            })?;
         }
 
         // Optional: custom timeout
@@ -491,7 +499,7 @@ mod tests {
             .build()?;
 
         assert_eq!(config.api_key(), "test_key");
-        assert_eq!(config.base_url(), "https://api.portkey.ai/v1");
+        assert_eq!(config.base_url().as_str(), "https://api.portkey.ai/v1");
         assert_eq!(config.timeout(), Duration::from_secs(30));
 
         Ok(())
@@ -504,12 +512,12 @@ mod tests {
             .with_auth_method(AuthMethod::VirtualKey {
                 virtual_key: "test_virtual_key".to_string(),
             })
-            .with_base_url("https://custom.api.com")
+            .with_base_url("https://custom.api.com")?
             .with_timeout(Duration::from_secs(60))
             .build()?;
 
         assert_eq!(config.api_key(), "test_key");
-        assert_eq!(config.base_url(), "https://custom.api.com");
+        assert_eq!(config.base_url().as_str(), "https://custom.api.com");
         assert_eq!(config.timeout(), Duration::from_secs(60));
 
         Ok(())

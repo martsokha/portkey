@@ -2,13 +2,15 @@
 //!
 //! This module provides methods for generating images using DALL-E models.
 
+use std::future::Future;
+
+use reqwest::multipart::{Form, Part};
+
 use crate::client::PortkeyClient;
 use crate::error::Result;
 use crate::model::{
     CreateImageEditRequest, CreateImageRequest, CreateImageVariationRequest, ImagesResponse,
 };
-use reqwest::multipart::{Form, Part};
-use std::future::Future;
 
 /// Trait for Images API operations.
 pub trait ImagesService {

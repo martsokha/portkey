@@ -1,11 +1,10 @@
-use crate::{
-    PortkeyClient, Result,
-    model::{
-        CreateFineTuningJobRequest, FineTuningJob, ListFineTuningJobCheckpointsResponse,
-        ListFineTuningJobEventsResponse, ListFineTuningJobsResponse,
-    },
-};
 use std::future::Future;
+
+use crate::model::{
+    CreateFineTuningJobRequest, FineTuningJob, ListFineTuningJobCheckpointsResponse,
+    ListFineTuningJobEventsResponse, ListFineTuningJobsResponse, PaginationParams,
+};
+use crate::{PortkeyClient, Result};
 
 /// Service for managing fine-tuning jobs.
 ///
@@ -81,8 +80,7 @@ pub trait FineTuningService {
     /// ```
     fn list_fine_tuning_jobs(
         &self,
-        after: Option<&str>,
-        limit: Option<i32>,
+        params: PaginationParams,
     ) -> impl Future<Output = Result<ListFineTuningJobsResponse>>;
 
     /// Get info about a fine-tuning job.
@@ -153,8 +151,7 @@ pub trait FineTuningService {
     fn list_fine_tuning_job_events(
         &self,
         fine_tuning_job_id: &str,
-        after: Option<&str>,
-        limit: Option<i32>,
+        params: PaginationParams,
     ) -> impl Future<Output = Result<ListFineTuningJobEventsResponse>>;
 
     /// List checkpoints for a fine-tuning job.
@@ -181,8 +178,7 @@ pub trait FineTuningService {
     fn list_fine_tuning_job_checkpoints(
         &self,
         fine_tuning_job_id: &str,
-        after: Option<&str>,
-        limit: Option<i32>,
+        params: PaginationParams,
     ) -> impl Future<Output = Result<ListFineTuningJobCheckpointsResponse>>;
 }
 
@@ -212,8 +208,7 @@ impl FineTuningService for PortkeyClient {
 
     async fn list_fine_tuning_jobs(
         &self,
-        after: Option<&str>,
-        limit: Option<i32>,
+        params: PaginationParams<'_>,
     ) -> Result<ListFineTuningJobsResponse> {
         #[cfg(feature = "tracing")]
         tracing::debug!(
@@ -221,22 +216,13 @@ impl FineTuningService for PortkeyClient {
             "Listing fine-tuning jobs"
         );
 
-        let mut url = "/fine_tuning/jobs".to_string();
-        let mut params = Vec::new();
+        let query_params = params.to_query_params();
+        let query_params_refs: Vec<(&str, &str)> =
+            query_params.iter().map(|(k, v)| (*k, v.as_str())).collect();
 
-        if let Some(after) = after {
-            params.push(format!("after={}", after));
-        }
-        if let Some(limit) = limit {
-            params.push(format!("limit={}", limit));
-        }
+        let url = self.build_url("/fine_tuning/jobs", &query_params_refs);
 
-        if !params.is_empty() {
-            url.push_str("?");
-            url.push_str(&params.join("&"));
-        }
-
-        let response = self.get(&url).send().await?;
+        let response = self.get(url.as_str()).send().await?;
         let response = response.error_for_status()?;
         let jobs: ListFineTuningJobsResponse = response.json().await?;
 
@@ -301,8 +287,7 @@ impl FineTuningService for PortkeyClient {
     async fn list_fine_tuning_job_events(
         &self,
         fine_tuning_job_id: &str,
-        after: Option<&str>,
-        limit: Option<i32>,
+        params: PaginationParams<'_>,
     ) -> Result<ListFineTuningJobEventsResponse> {
         #[cfg(feature = "tracing")]
         tracing::debug!(
@@ -311,22 +296,16 @@ impl FineTuningService for PortkeyClient {
             "Listing fine-tuning job events"
         );
 
-        let mut url = format!("/fine_tuning/jobs/{}/events", fine_tuning_job_id);
-        let mut params = Vec::new();
+        let query_params = params.to_query_params();
+        let query_params_refs: Vec<(&str, &str)> =
+            query_params.iter().map(|(k, v)| (*k, v.as_str())).collect();
 
-        if let Some(after) = after {
-            params.push(format!("after={}", after));
-        }
-        if let Some(limit) = limit {
-            params.push(format!("limit={}", limit));
-        }
+        let url = self.build_url(
+            &format!("/fine_tuning/jobs/{}/events", fine_tuning_job_id),
+            &query_params_refs,
+        );
 
-        if !params.is_empty() {
-            url.push_str("?");
-            url.push_str(&params.join("&"));
-        }
-
-        let response = self.get(&url).send().await?;
+        let response = self.get(url.as_str()).send().await?;
         let response = response.error_for_status()?;
         let events: ListFineTuningJobEventsResponse = response.json().await?;
 
@@ -342,8 +321,7 @@ impl FineTuningService for PortkeyClient {
     async fn list_fine_tuning_job_checkpoints(
         &self,
         fine_tuning_job_id: &str,
-        after: Option<&str>,
-        limit: Option<i32>,
+        params: PaginationParams<'_>,
     ) -> Result<ListFineTuningJobCheckpointsResponse> {
         #[cfg(feature = "tracing")]
         tracing::debug!(
@@ -352,22 +330,16 @@ impl FineTuningService for PortkeyClient {
             "Listing fine-tuning job checkpoints"
         );
 
-        let mut url = format!("/fine_tuning/jobs/{}/checkpoints", fine_tuning_job_id);
-        let mut params = Vec::new();
+        let query_params = params.to_query_params();
+        let query_params_refs: Vec<(&str, &str)> =
+            query_params.iter().map(|(k, v)| (*k, v.as_str())).collect();
 
-        if let Some(after) = after {
-            params.push(format!("after={}", after));
-        }
-        if let Some(limit) = limit {
-            params.push(format!("limit={}", limit));
-        }
+        let url = self.build_url(
+            &format!("/fine_tuning/jobs/{}/checkpoints", fine_tuning_job_id),
+            &query_params_refs,
+        );
 
-        if !params.is_empty() {
-            url.push_str("?");
-            url.push_str(&params.join("&"));
-        }
-
-        let response = self.get(&url).send().await?;
+        let response = self.get(url.as_str()).send().await?;
         let response = response.error_for_status()?;
         let checkpoints: ListFineTuningJobCheckpointsResponse = response.json().await?;
 

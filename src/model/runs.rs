@@ -1,5 +1,6 @@
-use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+
+use serde::{Deserialize, Serialize};
 
 use super::assistants::AssistantTool;
 use super::chat::{FunctionCall as ChatFunctionCall, ResponseFormat, ToolChoice as ChatToolChoice};
@@ -16,7 +17,7 @@ use super::chat::{FunctionCall as ChatFunctionCall, ResponseFormat, ToolChoice a
 ///     .build()
 ///     .unwrap();
 /// ```
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct CreateRunRequest {
     /// The ID of the assistant to use to execute this run.
     pub assistant_id: String,
@@ -68,26 +69,6 @@ pub struct CreateRunRequest {
     /// Specifies the format that the model must output.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub response_format: Option<ResponseFormat>,
-}
-
-impl Default for CreateRunRequest {
-    fn default() -> Self {
-        Self {
-            assistant_id: String::new(),
-            model: None,
-            instructions: None,
-            additional_instructions: None,
-            tools: None,
-            metadata: None,
-            temperature: None,
-            top_p: None,
-            max_prompt_tokens: None,
-            max_completion_tokens: None,
-            truncation_strategy: None,
-            tool_choice: None,
-            response_format: None,
-        }
-    }
 }
 
 /// Modifies a run.

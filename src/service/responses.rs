@@ -1,10 +1,10 @@
-use crate::client::PortkeyClient;
-use crate::error::Result;
-use crate::model::{CreateResponseRequest, ListInputItemsParams, ListInputItemsResponse, Response};
 use std::future::Future;
 
 #[cfg(feature = "tracing")]
 use crate::TRACING_TARGET_SERVICE;
+use crate::client::PortkeyClient;
+use crate::error::Result;
+use crate::model::{CreateResponseRequest, ListInputItemsParams, ListInputItemsResponse, Response};
 
 /// Service trait for managing responses in Portkey.
 ///

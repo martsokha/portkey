@@ -1,8 +1,7 @@
-use crate::{
-    PortkeyClient, Result,
-    model::{Batch, CreateBatchRequest, ListBatchesResponse},
-};
 use std::future::Future;
+
+use crate::model::{Batch, CreateBatchRequest, ListBatchesResponse, PaginationParams};
+use crate::{PortkeyClient, Result};
 
 /// Service for managing batch processing jobs.
 ///
@@ -109,8 +108,7 @@ pub trait BatchesService {
     /// ```
     fn list_batches(
         &self,
-        after: Option<&str>,
-        limit: Option<i32>,
+        params: PaginationParams,
     ) -> impl Future<Output = Result<ListBatchesResponse>>;
 }
 
@@ -181,33 +179,20 @@ impl BatchesService for PortkeyClient {
         Ok(batch)
     }
 
-    async fn list_batches(
-        &self,
-        after: Option<&str>,
-        limit: Option<i32>,
-    ) -> Result<ListBatchesResponse> {
+    async fn list_batches(&self, params: PaginationParams<'_>) -> Result<ListBatchesResponse> {
         #[cfg(feature = "tracing")]
         tracing::debug!(
             target: crate::TRACING_TARGET_SERVICE,
             "Listing batches"
         );
 
-        let mut url = "/batches".to_string();
-        let mut params = Vec::new();
+        let query_params = params.to_query_params();
+        let query_params_refs: Vec<(&str, &str)> =
+            query_params.iter().map(|(k, v)| (*k, v.as_str())).collect();
 
-        if let Some(after) = after {
-            params.push(format!("after={}", after));
-        }
-        if let Some(limit) = limit {
-            params.push(format!("limit={}", limit));
-        }
+        let url = self.build_url("/batches", &query_params_refs);
 
-        if !params.is_empty() {
-            url.push_str("?");
-            url.push_str(&params.join("&"));
-        }
-
-        let response = self.get(&url).send().await?;
+        let response = self.get(url.as_str()).send().await?;
         let response = response.error_for_status()?;
         let batches: ListBatchesResponse = response.json().await?;
 

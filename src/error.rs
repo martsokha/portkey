@@ -50,6 +50,12 @@ pub enum Error {
     #[error("Configuration error: {0}")]
     Config(#[from] PortkeyBuilderError),
 
+    /// URL parsing error.
+    ///
+    /// This occurs when a provided URL string is invalid or cannot be parsed.
+    #[error("URL parse error: {0}")]
+    UrlParse(#[from] url::ParseError),
+
     /// API error response.
     ///
     /// This occurs when the Portkey API returns an error response.

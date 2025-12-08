@@ -2,10 +2,11 @@
 //!
 //! Provides access to the legacy completions endpoint.
 
+use std::future::Future;
+
 use crate::client::PortkeyClient;
 use crate::error::Result;
 use crate::model::{CompletionResponse, CreateCompletionRequest};
-use std::future::Future;
 
 /// Service trait for completions operations.
 pub trait CompletionsService {

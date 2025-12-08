@@ -1,3 +1,7 @@
+use std::future::Future;
+
+#[cfg(feature = "tracing")]
+use crate::TRACING_TARGET_SERVICE;
 use crate::client::PortkeyClient;
 use crate::error::Result;
 use crate::model::{
@@ -5,10 +9,6 @@ use crate::model::{
     InsertLogRequest, InsertLogResponse, ListLogExportsParams, ListLogExportsResponse, LogExport,
     UpdateLogExportRequest, UpdateLogExportResponse,
 };
-use std::future::Future;
-
-#[cfg(feature = "tracing")]
-use crate::TRACING_TARGET_SERVICE;
 
 /// Service trait for managing log exports.
 ///

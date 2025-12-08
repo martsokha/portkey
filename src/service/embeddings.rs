@@ -1,10 +1,10 @@
-use crate::client::PortkeyClient;
-use crate::error::Result;
-use crate::model::{CreateEmbeddingRequest, CreateEmbeddingResponse};
 use std::future::Future;
 
 #[cfg(feature = "tracing")]
 use crate::TRACING_TARGET_SERVICE;
+use crate::client::PortkeyClient;
+use crate::error::Result;
+use crate::model::{CreateEmbeddingRequest, CreateEmbeddingResponse};
 
 /// Service trait for creating embeddings.
 ///

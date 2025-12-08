@@ -1,11 +1,10 @@
-use crate::{
-    PortkeyClient, Result,
-    model::{
-        CreateRunRequest, ListRunStepsResponse, ListRunsResponse, ModifyRunRequest, Run, RunStep,
-        SubmitToolOutputsRequest,
-    },
-};
 use std::future::Future;
+
+use crate::model::{
+    CreateRunRequest, ListRunStepsResponse, ListRunsResponse, ModifyRunRequest, PaginationParams,
+    Run, RunStep, SubmitToolOutputsRequest,
+};
+use crate::{PortkeyClient, Result};
 
 /// Service for managing runs.
 ///
@@ -13,8 +12,6 @@ use std::future::Future;
 ///
 /// ```no_run
 /// # use portkey_sdk::{PortkeyConfig, PortkeyClient, Result};
-///
-
 /// # async fn example() -> Result<()> {
 /// let config = PortkeyConfig::builder()
 ///     .with_api_key("your-api-key")
@@ -56,10 +53,7 @@ pub trait RunsService {
     fn list_runs(
         &self,
         thread_id: &str,
-        limit: Option<i32>,
-        order: Option<&str>,
-        after: Option<&str>,
-        before: Option<&str>,
+        params: PaginationParams,
     ) -> impl Future<Output = Result<ListRunsResponse>>;
 
     /// When a run has the status: "requires_action" and required_action.type is submit_tool_outputs,
@@ -91,10 +85,7 @@ pub trait RunsService {
         &self,
         thread_id: &str,
         run_id: &str,
-        limit: Option<i32>,
-        order: Option<&str>,
-        after: Option<&str>,
-        before: Option<&str>,
+        params: PaginationParams,
     ) -> impl Future<Output = Result<ListRunStepsResponse>>;
 }
 
@@ -183,10 +174,7 @@ impl RunsService for PortkeyClient {
     async fn list_runs(
         &self,
         thread_id: &str,
-        limit: Option<i32>,
-        order: Option<&str>,
-        after: Option<&str>,
-        before: Option<&str>,
+        params: PaginationParams<'_>,
     ) -> Result<ListRunsResponse> {
         #[cfg(feature = "tracing")]
         tracing::debug!(
@@ -195,28 +183,13 @@ impl RunsService for PortkeyClient {
             "Listing runs"
         );
 
-        let mut url = format!("/threads/{}/runs", thread_id);
-        let mut params = Vec::new();
+        let query_params = params.to_query_params();
+        let query_params_refs: Vec<(&str, &str)> =
+            query_params.iter().map(|(k, v)| (*k, v.as_str())).collect();
 
-        if let Some(limit) = limit {
-            params.push(format!("limit={}", limit));
-        }
-        if let Some(order) = order {
-            params.push(format!("order={}", order));
-        }
-        if let Some(after) = after {
-            params.push(format!("after={}", after));
-        }
-        if let Some(before) = before {
-            params.push(format!("before={}", before));
-        }
+        let url = self.build_url(&format!("/threads/{}/runs", thread_id), &query_params_refs);
 
-        if !params.is_empty() {
-            url.push_str("?");
-            url.push_str(&params.join("&"));
-        }
-
-        let response = self.get(&url).send().await?;
+        let response = self.get(url.as_str()).send().await?;
         let response = response.error_for_status()?;
         let runs: ListRunsResponse = response.json().await?;
 
@@ -347,10 +320,7 @@ impl RunsService for PortkeyClient {
         &self,
         thread_id: &str,
         run_id: &str,
-        limit: Option<i32>,
-        order: Option<&str>,
-        after: Option<&str>,
-        before: Option<&str>,
+        params: PaginationParams<'_>,
     ) -> Result<ListRunStepsResponse> {
         #[cfg(feature = "tracing")]
         tracing::debug!(
@@ -360,28 +330,16 @@ impl RunsService for PortkeyClient {
             "Listing run steps"
         );
 
-        let mut url = format!("/threads/{}/runs/{}/steps", thread_id, run_id);
-        let mut params = Vec::new();
+        let query_params = params.to_query_params();
+        let query_params_refs: Vec<(&str, &str)> =
+            query_params.iter().map(|(k, v)| (*k, v.as_str())).collect();
 
-        if let Some(limit) = limit {
-            params.push(format!("limit={}", limit));
-        }
-        if let Some(order) = order {
-            params.push(format!("order={}", order));
-        }
-        if let Some(after) = after {
-            params.push(format!("after={}", after));
-        }
-        if let Some(before) = before {
-            params.push(format!("before={}", before));
-        }
+        let url = self.build_url(
+            &format!("/threads/{}/runs/{}/steps", thread_id, run_id),
+            &query_params_refs,
+        );
 
-        if !params.is_empty() {
-            url.push_str("?");
-            url.push_str(&params.join("&"));
-        }
-
-        let response = self.get(&url).send().await?;
+        let response = self.get(url.as_str()).send().await?;
         let response = response.error_for_status()?;
         let steps: ListRunStepsResponse = response.json().await?;
 

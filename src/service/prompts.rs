@@ -1,12 +1,12 @@
+use std::future::Future;
+
+#[cfg(feature = "tracing")]
+use crate::TRACING_TARGET_SERVICE;
 use crate::client::PortkeyClient;
 use crate::error::Result;
 use crate::model::{
     PromptCompletionRequest, PromptCompletionResponse, PromptRenderRequest, PromptRenderResponse,
 };
-use std::future::Future;
-
-#[cfg(feature = "tracing")]
-use crate::TRACING_TARGET_SERVICE;
 
 /// Service trait for executing prompt templates.
 ///
