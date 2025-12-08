@@ -120,7 +120,7 @@ impl BatchesService for PortkeyClient {
             "Creating batch"
         );
 
-        let response = self.post("/batches").json(&request).send().await?;
+        let response = self.post("/batches")?.json(&request).send().await?;
         let response = response.error_for_status()?;
         let batch: Batch = response.json().await?;
 
@@ -141,7 +141,7 @@ impl BatchesService for PortkeyClient {
             "Retrieving batch"
         );
 
-        let response = self.get(&format!("/batches/{}", batch_id)).send().await?;
+        let response = self.get(&format!("/batches/{}", batch_id))?.send().await?;
         let response = response.error_for_status()?;
         let batch: Batch = response.json().await?;
 
@@ -163,7 +163,7 @@ impl BatchesService for PortkeyClient {
         );
 
         let response = self
-            .post(&format!("/batches/{}/cancel", batch_id))
+            .post(&format!("/batches/{}/cancel", batch_id))?
             .json(&serde_json::json!({}))
             .send()
             .await?;
@@ -192,7 +192,7 @@ impl BatchesService for PortkeyClient {
 
         let url = self.build_url("/batches", &query_params_refs);
 
-        let response = self.get(url.as_str()).send().await?;
+        let response = self.get(url?.as_str())?.send().await?;
         let response = response.error_for_status()?;
         let batches: ListBatchesResponse = response.json().await?;
 

@@ -61,7 +61,7 @@ impl CompletionsService for PortkeyClient {
         );
 
         let response = self
-            .post("/completions")
+            .post("/completions")?
             .json(&request)
             .send()
             .await?

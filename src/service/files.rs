@@ -139,7 +139,7 @@ impl FilesService for PortkeyClient {
             .text("purpose", request.purpose);
 
         let response = self
-            .post("/files")
+            .post("/files")?
             .multipart(form)
             .send()
             .await?
@@ -167,7 +167,7 @@ impl FilesService for PortkeyClient {
         );
 
         let response = self
-            .get("/files")
+            .get("/files")?
             .send()
             .await?
             .error_for_status()?
@@ -193,7 +193,7 @@ impl FilesService for PortkeyClient {
         );
 
         let response = self
-            .get(&format!("/files/{}", file_id))
+            .get(&format!("/files/{}", file_id))?
             .send()
             .await?
             .error_for_status()?
@@ -220,7 +220,7 @@ impl FilesService for PortkeyClient {
         );
 
         let response = self
-            .get(&format!("/files/{}/content", file_id))
+            .get(&format!("/files/{}/content", file_id))?
             .send()
             .await?
             .error_for_status()?
@@ -246,7 +246,7 @@ impl FilesService for PortkeyClient {
         );
 
         let response = self
-            .delete(&format!("/files/{}", file_id))
+            .delete(&format!("/files/{}", file_id))?
             .send()
             .await?
             .error_for_status()?

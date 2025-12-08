@@ -209,7 +209,7 @@ impl AudioService for PortkeyClient {
         }
 
         let response = self
-            .post("/audio/transcriptions")
+            .post("/audio/transcriptions")?
             .multipart(form)
             .send()
             .await?;
@@ -220,7 +220,7 @@ impl AudioService for PortkeyClient {
     }
 
     async fn create_speech(&self, request: CreateSpeechRequest) -> Result<Vec<u8>> {
-        let response = self.post("/audio/speech").json(&request).send().await?;
+        let response = self.post("/audio/speech")?.json(&request).send().await?;
 
         let response = response.error_for_status()?;
         let audio_bytes = response.bytes().await?;
@@ -260,7 +260,7 @@ impl AudioService for PortkeyClient {
         }
 
         let response = self
-            .post("/audio/translations")
+            .post("/audio/translations")?
             .multipart(form)
             .send()
             .await?;

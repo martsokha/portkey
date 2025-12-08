@@ -73,7 +73,7 @@ impl ModerationsService for PortkeyClient {
             "Creating moderation"
         );
 
-        let response = self.post("/moderations").json(&request).send().await?;
+        let response = self.post("/moderations")?.json(&request).send().await?;
         let response = response.error_for_status()?;
         let moderation: ModerationResponse = response.json().await?;
 

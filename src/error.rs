@@ -55,27 +55,6 @@ pub enum Error {
     /// This occurs when a provided URL string is invalid or cannot be parsed.
     #[error("URL parse error: {0}")]
     UrlParse(#[from] url::ParseError),
-
-    /// API error response.
-    ///
-    /// This occurs when the Portkey API returns an error response.
-    #[error("API error: {message}")]
-    Api {
-        /// Error message from the API
-        message: String,
-        /// HTTP status code
-        status: Option<u16>,
-    },
-}
-
-impl Error {
-    /// Creates a new API error.
-    pub fn api(message: impl Into<String>, status: Option<u16>) -> Self {
-        Self::Api {
-            message: message.into(),
-            status,
-        }
-    }
 }
 
 /// Result type for Portkey API operations.

@@ -98,7 +98,7 @@ impl AssistantsService for PortkeyClient {
             "Creating assistant"
         );
 
-        let response = self.post("/assistants").json(&request).send().await?;
+        let response = self.post("/assistants")?.json(&request).send().await?;
         let response = response.error_for_status()?;
         let assistant: Assistant = response.json().await?;
 
@@ -120,7 +120,7 @@ impl AssistantsService for PortkeyClient {
         );
 
         let response = self
-            .get(&format!("/assistants/{}", assistant_id))
+            .get(&format!("/assistants/{}", assistant_id))?
             .send()
             .await?;
         let response = response.error_for_status()?;
@@ -148,7 +148,7 @@ impl AssistantsService for PortkeyClient {
         );
 
         let response = self
-            .post(&format!("/assistants/{}", assistant_id))
+            .post(&format!("/assistants/{}", assistant_id))?
             .json(&request)
             .send()
             .await?;
@@ -173,7 +173,7 @@ impl AssistantsService for PortkeyClient {
         );
 
         let response = self
-            .delete(&format!("/assistants/{}", assistant_id))
+            .delete(&format!("/assistants/{}", assistant_id))?
             .send()
             .await?;
         let response = response.error_for_status()?;
@@ -204,7 +204,7 @@ impl AssistantsService for PortkeyClient {
 
         let url = self.build_url("/assistants", &query_params_refs);
 
-        let response = self.get(url.as_str()).send().await?;
+        let response = self.get(url?.as_str())?.send().await?;
         let response = response.error_for_status()?;
         let assistants: ListAssistantsResponse = response.json().await?;
 
@@ -230,7 +230,7 @@ impl AssistantsService for PortkeyClient {
         );
 
         let response = self
-            .post(&format!("/assistants/{}/files", assistant_id))
+            .post(&format!("/assistants/{}/files", assistant_id))?
             .json(&request)
             .send()
             .await?;
@@ -260,7 +260,7 @@ impl AssistantsService for PortkeyClient {
         );
 
         let response = self
-            .get(&format!("/assistants/{}/files/{}", assistant_id, file_id))
+            .get(&format!("/assistants/{}/files/{}", assistant_id, file_id))?
             .send()
             .await?;
         let response = response.error_for_status()?;
@@ -289,7 +289,7 @@ impl AssistantsService for PortkeyClient {
         );
 
         let response = self
-            .delete(&format!("/assistants/{}/files/{}", assistant_id, file_id))
+            .delete(&format!("/assistants/{}/files/{}", assistant_id, file_id))?
             .send()
             .await?;
         let response = response.error_for_status()?;
@@ -325,7 +325,7 @@ impl AssistantsService for PortkeyClient {
             &query_params_refs,
         );
 
-        let response = self.get(url.as_str()).send().await?;
+        let response = self.get(url?.as_str())?.send().await?;
         let response = response.error_for_status()?;
         let files: ListAssistantFilesResponse = response.json().await?;
 

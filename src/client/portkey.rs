@@ -6,7 +6,7 @@
 use std::fmt;
 use std::sync::Arc;
 
-use reqwest::{Client, RequestBuilder};
+use reqwest::{Client, Method, RequestBuilder};
 
 use super::config::{AuthMethod, PortkeyConfig};
 #[cfg(feature = "tracing")]
@@ -256,146 +256,68 @@ impl PortkeyClient {
         builder
     }
 
-    /// Builds a URL with the given path and optional query parameters.
-    pub(crate) fn build_url(&self, path: &str, params: &[(&str, &str)]) -> url::Url {
-        let mut url = self.inner.config.base_url().clone();
+    /// Parses the base URL and appends the given path.
+    fn parse_url(&self, path: &str) -> Result<url::Url> {
+        let mut url = url::Url::parse(self.inner.config.base_url())?;
         url.set_path(&format!("{}{}", url.path().trim_end_matches('/'), path));
+        Ok(url)
+    }
+
+    /// Builds a URL with the given path and optional query parameters.
+    pub(crate) fn build_url(&self, path: &str, params: &[(&str, &str)]) -> Result<url::Url> {
+        let mut url = self.parse_url(path)?;
 
         if !params.is_empty() {
             url.query_pairs_mut().extend_pairs(params);
         }
 
-        url
+        Ok(url)
+    }
+
+    /// Creates an HTTP request with the specified method.
+    fn request(&self, method: Method, path: &str) -> Result<RequestBuilder> {
+        let url = self.parse_url(path)?;
+
+        #[cfg(feature = "tracing")]
+        tracing::trace!(
+            target: TRACING_TARGET_CLIENT,
+            url = %url,
+            method = %method,
+            "Creating HTTP request"
+        );
+
+        let builder = self
+            .inner
+            .client
+            .request(method, url)
+            .timeout(self.inner.config.timeout());
+
+        Ok(self.apply_portkey_headers(builder))
     }
 
     /// Creates a GET request.
-    #[cfg_attr(
-        feature = "tracing",
-        tracing::instrument(skip(self), fields(method = "GET", path, url))
-    )]
-    pub(crate) fn get(&self, path: &str) -> RequestBuilder {
-        let mut url = self.inner.config.base_url().clone();
-        url.set_path(&format!("{}{}", url.path().trim_end_matches('/'), path));
-
-        #[cfg(feature = "tracing")]
-        tracing::trace!(
-            target: TRACING_TARGET_CLIENT,
-            url = %url,
-            method = "GET",
-            "Creating HTTP GET request"
-        );
-
-        let builder = self
-            .inner
-            .client
-            .get(url)
-            .timeout(self.inner.config.timeout());
-
-        self.apply_portkey_headers(builder)
+    pub(crate) fn get(&self, path: &str) -> Result<RequestBuilder> {
+        self.request(Method::GET, path)
     }
 
     /// Creates a POST request.
-    #[cfg_attr(
-        feature = "tracing",
-        tracing::instrument(skip(self), fields(method = "POST", path, url))
-    )]
-    pub(crate) fn post(&self, path: &str) -> RequestBuilder {
-        let mut url = self.inner.config.base_url().clone();
-        url.set_path(&format!("{}{}", url.path().trim_end_matches('/'), path));
-
-        #[cfg(feature = "tracing")]
-        tracing::trace!(
-            target: TRACING_TARGET_CLIENT,
-            url = %url,
-            method = "POST",
-            "Creating HTTP POST request"
-        );
-
-        let builder = self
-            .inner
-            .client
-            .post(url)
-            .timeout(self.inner.config.timeout());
-
-        self.apply_portkey_headers(builder)
+    pub(crate) fn post(&self, path: &str) -> Result<RequestBuilder> {
+        self.request(Method::POST, path)
     }
 
     /// Creates a PUT request.
-    #[cfg_attr(
-        feature = "tracing",
-        tracing::instrument(skip(self), fields(method = "PUT", path, url))
-    )]
-    pub(crate) fn put(&self, path: &str) -> RequestBuilder {
-        let mut url = self.inner.config.base_url().clone();
-        url.set_path(&format!("{}{}", url.path().trim_end_matches('/'), path));
-
-        #[cfg(feature = "tracing")]
-        tracing::trace!(
-            target: TRACING_TARGET_CLIENT,
-            url = %url,
-            method = "PUT",
-            "Creating HTTP PUT request"
-        );
-
-        let builder = self
-            .inner
-            .client
-            .put(url)
-            .timeout(self.inner.config.timeout());
-
-        self.apply_portkey_headers(builder)
+    pub(crate) fn put(&self, path: &str) -> Result<RequestBuilder> {
+        self.request(Method::PUT, path)
     }
 
     /// Creates a PATCH request.
-    #[cfg_attr(
-        feature = "tracing",
-        tracing::instrument(skip(self), fields(method = "PATCH", path, url))
-    )]
-    pub(crate) fn patch(&self, path: &str) -> RequestBuilder {
-        let mut url = self.inner.config.base_url().clone();
-        url.set_path(&format!("{}{}", url.path().trim_end_matches('/'), path));
-
-        #[cfg(feature = "tracing")]
-        tracing::trace!(
-            target: TRACING_TARGET_CLIENT,
-            url = %url,
-            method = "PATCH",
-            "Creating HTTP PATCH request"
-        );
-
-        let builder = self
-            .inner
-            .client
-            .patch(url)
-            .timeout(self.inner.config.timeout());
-
-        self.apply_portkey_headers(builder)
+    pub(crate) fn patch(&self, path: &str) -> Result<RequestBuilder> {
+        self.request(Method::PATCH, path)
     }
 
     /// Creates a DELETE request.
-    #[cfg_attr(
-        feature = "tracing",
-        tracing::instrument(skip(self), fields(method = "DELETE", path, url))
-    )]
-    pub(crate) fn delete(&self, path: &str) -> RequestBuilder {
-        let mut url = self.inner.config.base_url().clone();
-        url.set_path(&format!("{}{}", url.path().trim_end_matches('/'), path));
-
-        #[cfg(feature = "tracing")]
-        tracing::trace!(
-            target: TRACING_TARGET_CLIENT,
-            url = %url,
-            method = "DELETE",
-            "Creating HTTP DELETE request"
-        );
-
-        let builder = self
-            .inner
-            .client
-            .delete(url)
-            .timeout(self.inner.config.timeout());
-
-        self.apply_portkey_headers(builder)
+    pub(crate) fn delete(&self, path: &str) -> Result<RequestBuilder> {
+        self.request(Method::DELETE, path)
     }
 }
 
@@ -431,10 +353,7 @@ mod tests {
         let client = PortkeyClient::new(config)?;
 
         assert_eq!(client.inner.config.api_key(), "test_api_key");
-        assert_eq!(
-            client.inner.config.base_url().as_str(),
-            "https://api.portkey.ai/v1"
-        );
+        assert_eq!(client.inner.config.base_url(), "https://api.portkey.ai/v1");
 
         Ok(())
     }
@@ -448,17 +367,14 @@ mod tests {
                 authorization: "Bearer sk-test".to_string(),
                 custom_host: None,
             })
-            .with_base_url("https://custom.api.com")?
+            .with_base_url("https://custom.api.com")
             .with_timeout(Duration::from_secs(60))
             .build()?;
 
         let client = PortkeyClient::new(config)?;
 
         assert_eq!(client.inner.config.api_key(), "custom_key");
-        assert_eq!(
-            client.inner.config.base_url().as_str(),
-            "https://custom.api.com"
-        );
+        assert_eq!(client.inner.config.base_url(), "https://custom.api.com");
         assert_eq!(client.inner.config.timeout(), Duration::from_secs(60));
 
         Ok(())

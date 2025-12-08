@@ -99,7 +99,7 @@ impl RunsService for PortkeyClient {
         );
 
         let response = self
-            .post(&format!("/threads/{}/runs", thread_id))
+            .post(&format!("/threads/{}/runs", thread_id))?
             .json(&request)
             .send()
             .await?;
@@ -125,7 +125,7 @@ impl RunsService for PortkeyClient {
         );
 
         let response = self
-            .get(&format!("/threads/{}/runs/{}", thread_id, run_id))
+            .get(&format!("/threads/{}/runs/{}", thread_id, run_id))?
             .send()
             .await?;
         let response = response.error_for_status()?;
@@ -155,7 +155,7 @@ impl RunsService for PortkeyClient {
         );
 
         let response = self
-            .post(&format!("/threads/{}/runs/{}", thread_id, run_id))
+            .post(&format!("/threads/{}/runs/{}", thread_id, run_id))?
             .json(&request)
             .send()
             .await?;
@@ -189,7 +189,7 @@ impl RunsService for PortkeyClient {
 
         let url = self.build_url(&format!("/threads/{}/runs", thread_id), &query_params_refs);
 
-        let response = self.get(url.as_str()).send().await?;
+        let response = self.get(url?.as_str())?.send().await?;
         let response = response.error_for_status()?;
         let runs: ListRunsResponse = response.json().await?;
 
@@ -220,7 +220,7 @@ impl RunsService for PortkeyClient {
             .post(&format!(
                 "/threads/{}/runs/{}/submit_tool_outputs",
                 thread_id, run_id
-            ))
+            ))?
             .json(&request)
             .send()
             .await?;
@@ -246,7 +246,7 @@ impl RunsService for PortkeyClient {
         );
 
         let response = self
-            .post(&format!("/threads/{}/runs/{}/cancel", thread_id, run_id))
+            .post(&format!("/threads/{}/runs/{}/cancel", thread_id, run_id))?
             .json(&serde_json::json!({}))
             .send()
             .await?;
@@ -269,7 +269,7 @@ impl RunsService for PortkeyClient {
             "Creating thread and run"
         );
 
-        let response = self.post("/threads/runs").json(&request).send().await?;
+        let response = self.post("/threads/runs")?.json(&request).send().await?;
         let response = response.error_for_status()?;
         let run: Run = response.json().await?;
 
@@ -301,7 +301,7 @@ impl RunsService for PortkeyClient {
             .get(&format!(
                 "/threads/{}/runs/{}/steps/{}",
                 thread_id, run_id, step_id
-            ))
+            ))?
             .send()
             .await?;
         let response = response.error_for_status()?;
@@ -339,7 +339,7 @@ impl RunsService for PortkeyClient {
             &query_params_refs,
         );
 
-        let response = self.get(url.as_str()).send().await?;
+        let response = self.get(url?.as_str())?.send().await?;
         let response = response.error_for_status()?;
         let steps: ListRunStepsResponse = response.json().await?;
 

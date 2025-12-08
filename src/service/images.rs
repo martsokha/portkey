@@ -177,7 +177,7 @@ pub trait ImagesService {
 impl ImagesService for PortkeyClient {
     async fn generate_image(&self, request: CreateImageRequest) -> Result<ImagesResponse> {
         let response = self
-            .post("/images/generations")
+            .post("/images/generations")?
             .json(&request)
             .send()
             .await?;
@@ -239,7 +239,7 @@ impl ImagesService for PortkeyClient {
             form = form.text("user", user);
         }
 
-        let response = self.post("/images/edits").multipart(form).send().await?;
+        let response = self.post("/images/edits")?.multipart(form).send().await?;
 
         let response = response.error_for_status()?;
         let images_response: ImagesResponse = response.json().await?;
@@ -290,7 +290,7 @@ impl ImagesService for PortkeyClient {
         }
 
         let response = self
-            .post("/images/variations")
+            .post("/images/variations")?
             .multipart(form)
             .send()
             .await?;

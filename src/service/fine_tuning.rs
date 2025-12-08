@@ -193,7 +193,11 @@ impl FineTuningService for PortkeyClient {
             "Creating fine-tuning job"
         );
 
-        let response = self.post("/fine_tuning/jobs").json(&request).send().await?;
+        let response = self
+            .post("/fine_tuning/jobs")?
+            .json(&request)
+            .send()
+            .await?;
         let response = response.error_for_status()?;
         let job: FineTuningJob = response.json().await?;
 
@@ -222,7 +226,7 @@ impl FineTuningService for PortkeyClient {
 
         let url = self.build_url("/fine_tuning/jobs", &query_params_refs);
 
-        let response = self.get(url.as_str()).send().await?;
+        let response = self.get(url?.as_str())?.send().await?;
         let response = response.error_for_status()?;
         let jobs: ListFineTuningJobsResponse = response.json().await?;
 
@@ -244,7 +248,7 @@ impl FineTuningService for PortkeyClient {
         );
 
         let response = self
-            .get(&format!("/fine_tuning/jobs/{}", fine_tuning_job_id))
+            .get(&format!("/fine_tuning/jobs/{}", fine_tuning_job_id))?
             .send()
             .await?;
         let response = response.error_for_status()?;
@@ -268,7 +272,7 @@ impl FineTuningService for PortkeyClient {
         );
 
         let response = self
-            .post(&format!("/fine_tuning/jobs/{}/cancel", fine_tuning_job_id))
+            .post(&format!("/fine_tuning/jobs/{}/cancel", fine_tuning_job_id))?
             .json(&serde_json::json!({}))
             .send()
             .await?;
@@ -305,7 +309,7 @@ impl FineTuningService for PortkeyClient {
             &query_params_refs,
         );
 
-        let response = self.get(url.as_str()).send().await?;
+        let response = self.get(url?.as_str())?.send().await?;
         let response = response.error_for_status()?;
         let events: ListFineTuningJobEventsResponse = response.json().await?;
 
@@ -339,7 +343,7 @@ impl FineTuningService for PortkeyClient {
             &query_params_refs,
         );
 
-        let response = self.get(url.as_str()).send().await?;
+        let response = self.get(url?.as_str())?.send().await?;
         let response = response.error_for_status()?;
         let checkpoints: ListFineTuningJobCheckpointsResponse = response.json().await?;
 

@@ -111,7 +111,7 @@ impl EmbeddingsService for PortkeyClient {
             "Creating embedding"
         );
 
-        let response = self.post("/embeddings").json(&request).send().await?;
+        let response = self.post("/embeddings")?.json(&request).send().await?;
         let response = response.error_for_status()?;
         let embedding_response: CreateEmbeddingResponse = response.json().await?;
 

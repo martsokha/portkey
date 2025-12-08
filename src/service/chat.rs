@@ -105,7 +105,11 @@ impl ChatService for PortkeyClient {
             "Creating chat completion"
         );
 
-        let response = self.post("/chat/completions").json(&request).send().await?;
+        let response = self
+            .post("/chat/completions")?
+            .json(&request)
+            .send()
+            .await?;
         let response = response.error_for_status()?;
         let chat_response: ChatCompletionResponse = response.json().await?;
 

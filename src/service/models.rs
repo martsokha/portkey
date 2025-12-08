@@ -57,7 +57,7 @@ pub trait ModelsService {
 
 impl ModelsService for PortkeyClient {
     async fn list_models(&self, params: Option<ListModelsParams>) -> Result<ListModelsResponse> {
-        let mut request = self.get("/models");
+        let mut request = self.get("/models")?;
 
         // Add query parameters if provided
         if let Some(p) = params {

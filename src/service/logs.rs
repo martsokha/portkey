@@ -221,7 +221,7 @@ impl LogsService for PortkeyClient {
             "Creating log export"
         );
 
-        let response = self.post("/logs/exports").json(&request).send().await?;
+        let response = self.post("/logs/exports")?.json(&request).send().await?;
         let response = response.error_for_status()?;
         let export_response: CreateLogExportResponse = response.json().await?;
 
@@ -237,7 +237,7 @@ impl LogsService for PortkeyClient {
         );
 
         let path = format!("/logs/exports/{}", export_id);
-        let response = self.get(&path).send().await?;
+        let response = self.get(&path)?.send().await?;
         let response = response.error_for_status()?;
         let export: LogExport = response.json().await?;
 
@@ -253,7 +253,7 @@ impl LogsService for PortkeyClient {
         );
 
         let path = format!("/logs/exports/{}/start", export_id);
-        let response = self.post(&path).send().await?;
+        let response = self.post(&path)?.send().await?;
         let response = response.error_for_status()?;
         let task_response: ExportTaskResponse = response.json().await?;
 
@@ -269,7 +269,7 @@ impl LogsService for PortkeyClient {
         );
 
         let path = format!("/logs/exports/{}/cancel", export_id);
-        let response = self.post(&path).send().await?;
+        let response = self.post(&path)?.send().await?;
         let response = response.error_for_status()?;
         let task_response: ExportTaskResponse = response.json().await?;
 
@@ -285,7 +285,7 @@ impl LogsService for PortkeyClient {
         );
 
         let path = format!("/logs/exports/{}/download", export_id);
-        let response = self.get(&path).send().await?;
+        let response = self.get(&path)?.send().await?;
         let response = response.error_for_status()?;
         let download_response: DownloadLogExportResponse = response.json().await?;
 
@@ -299,7 +299,7 @@ impl LogsService for PortkeyClient {
             "Inserting custom log(s)"
         );
 
-        let response = self.post("/logs").json(&request).send().await?;
+        let response = self.post("/logs")?.json(&request).send().await?;
         let response = response.error_for_status()?;
         let insert_response: InsertLogResponse = response.json().await?;
 
@@ -320,7 +320,7 @@ impl LogsService for PortkeyClient {
         );
 
         let path = format!("/logs/exports/{}", export_id);
-        let response = self.put(&path).json(&request).send().await?;
+        let response = self.put(&path)?.json(&request).send().await?;
         let response = response.error_for_status()?;
         let update_response: UpdateLogExportResponse = response.json().await?;
 
@@ -338,7 +338,7 @@ impl LogsService for PortkeyClient {
             "Listing log exports"
         );
 
-        let mut request = self.get("/logs/exports");
+        let mut request = self.get("/logs/exports")?;
 
         if let Some(p) = params
             && let Some(workspace_id) = p.workspace_id

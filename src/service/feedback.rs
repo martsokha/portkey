@@ -105,7 +105,7 @@ impl FeedbackService for PortkeyClient {
             "Creating feedback"
         );
 
-        let response = self.post("/feedback").json(&request).send().await?;
+        let response = self.post("/feedback")?.json(&request).send().await?;
         let response = response.error_for_status()?;
         let feedback_response: FeedbackResponse = response.json().await?;
 
@@ -126,7 +126,7 @@ impl FeedbackService for PortkeyClient {
         );
 
         let path = format!("/feedback/{}", feedback_id);
-        let response = self.patch(&path).json(&request).send().await?;
+        let response = self.patch(&path)?.json(&request).send().await?;
         let response = response.error_for_status()?;
         let feedback_response: FeedbackResponse = response.json().await?;
 

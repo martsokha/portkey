@@ -92,7 +92,7 @@ impl MessagesService for PortkeyClient {
         );
 
         let response = self
-            .post(&format!("/threads/{}/messages", thread_id))
+            .post(&format!("/threads/{}/messages", thread_id))?
             .json(&request)
             .send()
             .await?;
@@ -118,7 +118,7 @@ impl MessagesService for PortkeyClient {
         );
 
         let response = self
-            .get(&format!("/threads/{}/messages/{}", thread_id, message_id))
+            .get(&format!("/threads/{}/messages/{}", thread_id, message_id))?
             .send()
             .await?;
         let response = response.error_for_status()?;
@@ -148,7 +148,7 @@ impl MessagesService for PortkeyClient {
         );
 
         let response = self
-            .post(&format!("/threads/{}/messages/{}", thread_id, message_id))
+            .post(&format!("/threads/{}/messages/{}", thread_id, message_id))?
             .json(&request)
             .send()
             .await?;
@@ -185,7 +185,7 @@ impl MessagesService for PortkeyClient {
             &query_params_refs,
         );
 
-        let response = self.get(url.as_str()).send().await?;
+        let response = self.get(url?.as_str())?.send().await?;
         let response = response.error_for_status()?;
         let messages: ListMessagesResponse = response.json().await?;
 
@@ -217,7 +217,7 @@ impl MessagesService for PortkeyClient {
             .get(&format!(
                 "/threads/{}/messages/{}/files/{}",
                 thread_id, message_id, file_id
-            ))
+            ))?
             .send()
             .await?;
         let response = response.error_for_status()?;
@@ -255,7 +255,7 @@ impl MessagesService for PortkeyClient {
             &query_params_refs,
         );
 
-        let response = self.get(url.as_str()).send().await?;
+        let response = self.get(url?.as_str())?.send().await?;
         let response = response.error_for_status()?;
         let files: ListMessageFilesResponse = response.json().await?;
 
