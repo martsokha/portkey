@@ -26,28 +26,24 @@ use crate::error::Result;
 ///
 /// Creating a config with virtual key:
 /// ```no_run
-/// # use portkey_sdk::PortkeyConfig;
-/// # use portkey_sdk::AuthMethod;
+/// use portkey_sdk::PortkeyConfig;
+/// use portkey_sdk::builder::AuthMethod;
+///
 /// let config = PortkeyConfig::builder()
 ///     .with_api_key("your-portkey-api-key")
-///     .with_auth_method(AuthMethod::VirtualKey {
-///         virtual_key: "your-virtual-key".to_string(),
-///     })
+///     .with_auth_method(AuthMethod::virtual_key("your-virtual-key"))
 ///     .build()
 ///     .unwrap();
 /// ```
 ///
 /// Creating a config with provider auth:
 /// ```no_run
-/// # use portkey_sdk::PortkeyConfig;
-/// # use portkey_sdk::AuthMethod;
+/// use portkey_sdk::PortkeyConfig;
+/// use portkey_sdk::builder::AuthMethod;
+///
 /// let config = PortkeyConfig::builder()
 ///     .with_api_key("your-portkey-api-key")
-///     .with_auth_method(AuthMethod::ProviderAuth {
-///         provider: "openai".to_string(),
-///         authorization: "Bearer sk-...".to_string(),
-///         custom_host: None,
-///     })
+///     .with_auth_method(AuthMethod::provider_auth("openai", "Bearer sk-..."))
 ///     .build()
 ///     .unwrap();
 /// ```

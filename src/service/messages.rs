@@ -11,7 +11,10 @@ use crate::{PortkeyClient, Result};
 /// # Example
 ///
 /// ```no_run
-/// # use portkey_sdk::{PortkeyConfig, PortkeyClient, Result};
+/// use portkey_sdk::{PortkeyConfig, PortkeyClient, Result};
+/// use portkey_sdk::service::MessagesService;
+/// use portkey_sdk::model::CreateMessageRequest;
+///
 /// # async fn example() -> Result<()> {
 /// let config = PortkeyConfig::builder()
 ///     .with_api_key("your-api-key")
@@ -20,11 +23,11 @@ use crate::{PortkeyClient, Result};
 ///
 ///     let message = client.create_message(
 ///         "thread_abc123",
-///         CreateMessageRequest::builder()
-///             .role("user")
-///             .content("Hello!")
-///             .build()
-///             .unwrap()
+///         CreateMessageRequest {
+///             role: "user".to_string(),
+///             content: "Hello!".to_string(),
+///             ..Default::default()
+///         }
 ///     ).await?;
 ///
 ///     println!("Created message: {}", message.id);

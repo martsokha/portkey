@@ -29,16 +29,14 @@ portkey-sdk = { version = "0.1", features = [] }
 ### Builder Configuration
 
 ```rust,no_run
-use portkey_sdk::{AuthMethod, PortkeyConfig, Result};
+use portkey_sdk::{builder::AuthMethod, PortkeyConfig, Result};
 use std::time::Duration;
 
 #[tokio::main]
 async fn main() -> Result<()> {
     let client = PortkeyConfig::builder()
         .with_api_key("your-portkey-api-key")
-        .with_auth_method(AuthMethod::VirtualKey {
-            virtual_key: "your-virtual-key".to_string(),
-        })
+        .with_auth_method(AuthMethod::virtual_key("your-virtual-key"))
         .with_base_url("https://api.portkey.ai/v1")
         .with_timeout(Duration::from_secs(60))
         .build_client()?;

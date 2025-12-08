@@ -30,16 +30,16 @@ pub trait AudioService {
     /// # Example
     ///
     /// ```no_run
-    /// use portkey_sdk::{PortkeyConfig, PortkeyClient, AudioService, AuthMethod};
+    /// use portkey_sdk::{PortkeyConfig, PortkeyClient};
+    /// use portkey_sdk::service::AudioService;
+    /// use portkey_sdk::builder::AuthMethod;
     /// use portkey_sdk::model::{CreateTranscriptionRequest, TranscriptionResponseFormat};
     /// use std::fs;
     ///
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
     /// let config = PortkeyConfig::builder()
     ///     .with_api_key("your-api-key")
-    ///     .with_auth_method(AuthMethod::VirtualKey {
-    ///         virtual_key: "your-virtual-key".to_string()
-    ///     })
+    ///     .with_auth_method(AuthMethod::virtual_key("your-virtual-key"))
     ///     .build()?;
     /// let client = PortkeyClient::new(config)?;
     ///
@@ -80,16 +80,16 @@ pub trait AudioService {
     /// # Example
     ///
     /// ```no_run
-    /// use portkey_sdk::{PortkeyConfig, PortkeyClient, AudioService, AuthMethod};
+    /// use portkey_sdk::{PortkeyConfig, PortkeyClient};
+    /// use portkey_sdk::service::AudioService;
+    /// use portkey_sdk::builder::AuthMethod;
     /// use portkey_sdk::model::{CreateSpeechRequest, Voice, SpeechResponseFormat};
     /// use std::fs;
     ///
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
     /// let config = PortkeyConfig::builder()
     ///     .with_api_key("your-api-key")
-    ///     .with_auth_method(AuthMethod::VirtualKey {
-    ///         virtual_key: "your-virtual-key".to_string()
-    ///     })
+    ///     .with_auth_method(AuthMethod::virtual_key("your-virtual-key"))
     ///     .build()?;
     /// let client = PortkeyClient::new(config)?;
     ///
@@ -123,16 +123,16 @@ pub trait AudioService {
     /// # Example
     ///
     /// ```no_run
-    /// use portkey_sdk::{PortkeyConfig, PortkeyClient, AudioService, AuthMethod};
+    /// use portkey_sdk::{PortkeyConfig, PortkeyClient};
+    /// use portkey_sdk::service::AudioService;
+    /// use portkey_sdk::builder::AuthMethod;
     /// use portkey_sdk::model::{CreateTranslationRequest, TranscriptionResponseFormat};
     /// use std::fs;
     ///
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
     /// let config = PortkeyConfig::builder()
     ///     .with_api_key("your-api-key")
-    ///     .with_auth_method(AuthMethod::VirtualKey {
-    ///         virtual_key: "your-virtual-key".to_string()
-    ///     })
+    ///     .with_auth_method(AuthMethod::virtual_key("your-virtual-key"))
     ///     .build()?;
     /// let client = PortkeyClient::new(config)?;
     ///

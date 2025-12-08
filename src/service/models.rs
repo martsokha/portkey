@@ -6,7 +6,7 @@ use std::future::Future;
 
 use crate::client::PortkeyClient;
 use crate::error::Result;
-use crate::model::{ListModelsParams, ListModelsResponse};
+use crate::model::{ListModelsParams, ListModelsResponse, ModelSortField, SortOrder};
 
 /// Trait for Models API operations.
 pub trait ModelsService {
@@ -26,7 +26,8 @@ pub trait ModelsService {
     /// # Example
     ///
     /// ```no_run
-    /// use portkey_sdk::{PortkeyConfig, PortkeyClient, ModelsService};
+    /// use portkey_sdk::{PortkeyConfig, PortkeyClient};
+    /// use portkey_sdk::service::ModelsService;
     /// use portkey_sdk::model::ListModelsParams;
     ///
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
@@ -75,16 +76,16 @@ impl ModelsService for PortkeyClient {
             }
             if let Some(sort) = p.sort {
                 let sort_str = match sort {
-                    crate::model::ModelSortField::Name => "name",
-                    crate::model::ModelSortField::Provider => "provider",
-                    crate::model::ModelSortField::AiService => "ai_service",
+                    ModelSortField::Name => "name",
+                    ModelSortField::Provider => "provider",
+                    ModelSortField::AiService => "ai_service",
                 };
                 request = request.query(&[("sort", sort_str)]);
             }
             if let Some(order) = p.order {
                 let order_str = match order {
-                    crate::model::SortOrder::Asc => "asc",
-                    crate::model::SortOrder::Desc => "desc",
+                    SortOrder::Asc => "asc",
+                    SortOrder::Desc => "desc",
                 };
                 request = request.query(&[("order", order_str)]);
             }

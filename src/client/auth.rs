@@ -16,7 +16,8 @@ pub enum AuthMethod {
     ///
     /// # Example
     /// ```no_run
-    /// # use portkey_sdk::AuthMethod;
+    /// use portkey_sdk::builder::AuthMethod;
+    ///
     /// let auth = AuthMethod::VirtualKey {
     ///     virtual_key: "your-virtual-key".to_string(),
     /// };
@@ -33,7 +34,8 @@ pub enum AuthMethod {
     ///
     /// # Example
     /// ```no_run
-    /// # use portkey_sdk::AuthMethod;
+    /// use portkey_sdk::builder::AuthMethod;
+    ///
     /// let auth = AuthMethod::ProviderAuth {
     ///     provider: "openai".to_string(),
     ///     authorization: "Bearer sk-...".to_string(),
@@ -56,7 +58,8 @@ pub enum AuthMethod {
     ///
     /// # Example
     /// ```no_run
-    /// # use portkey_sdk::AuthMethod;
+    /// use portkey_sdk::builder::AuthMethod;
+    ///
     /// let auth = AuthMethod::Config {
     ///     config_id: "pc-config-123".to_string(),
     /// };
@@ -72,7 +75,8 @@ impl AuthMethod {
     ///
     /// # Example
     /// ```no_run
-    /// # use portkey_sdk::AuthMethod;
+    /// use portkey_sdk::builder::AuthMethod;
+    ///
     /// let auth = AuthMethod::virtual_key("your-virtual-key");
     /// ```
     pub fn virtual_key(virtual_key: impl Into<String>) -> Self {
@@ -85,7 +89,8 @@ impl AuthMethod {
     ///
     /// # Example
     /// ```no_run
-    /// # use portkey_sdk::AuthMethod;
+    /// use portkey_sdk::builder::AuthMethod;
+    ///
     /// let auth = AuthMethod::provider_auth("openai", "Bearer sk-...");
     /// ```
     pub fn provider_auth(provider: impl Into<String>, authorization: impl Into<String>) -> Self {
@@ -100,7 +105,8 @@ impl AuthMethod {
     ///
     /// # Example
     /// ```no_run
-    /// # use portkey_sdk::AuthMethod;
+    /// use portkey_sdk::builder::AuthMethod;
+    ///
     /// let auth = AuthMethod::provider_auth_with_host(
     ///     "openai",
     ///     "Bearer sk-...",
@@ -123,7 +129,8 @@ impl AuthMethod {
     ///
     /// # Example
     /// ```no_run
-    /// # use portkey_sdk::AuthMethod;
+    /// use portkey_sdk::builder::AuthMethod;
+    ///
     /// let auth = AuthMethod::config("pc-config-123");
     /// ```
     pub fn config(config_id: impl Into<String>) -> Self {

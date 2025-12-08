@@ -8,7 +8,10 @@ use crate::{PortkeyClient, Result};
 /// # Example
 ///
 /// ```no_run
-/// # use portkey_sdk::{PortkeyConfig, PortkeyClient, Result};
+/// use portkey_sdk::{PortkeyConfig, PortkeyClient, Result};
+/// use portkey_sdk::service::ModerationsService;
+/// use portkey_sdk::model::CreateModerationRequest;
+///
 /// # async fn example() -> Result<()> {
 /// let config = PortkeyConfig::builder()
 ///     .with_api_key("your-api-key")
@@ -16,10 +19,10 @@ use crate::{PortkeyClient, Result};
 /// let client = PortkeyClient::new(config)?;
 ///
 ///     let response = client.create_moderation(
-///         CreateModerationRequest::builder()
-///             .input("I want to hurt someone")
-///             .build()
-///             .unwrap()
+///         CreateModerationRequest {
+///             input: portkey_sdk::model::ModerationInput::String("I want to hurt someone".to_string()),
+///             model: None,
+///         }
 ///     ).await?;
 ///
 ///     for result in response.results {
@@ -36,12 +39,14 @@ pub trait ModerationsService {
     /// # Example
     ///
     /// ```no_run
+    /// # use portkey_sdk::model::{CreateModerationRequest, ModerationInput};
+    /// # use portkey_sdk::service::ModerationsService;
+    /// # async fn example(client: &impl ModerationsService) -> portkey_sdk::Result<()> {
     /// let response = client.create_moderation(
-    ///     CreateModerationRequest::builder()
-    ///         .input("Sample text to moderate")
-    ///         .model("text-moderation-latest")
-    ///         .build()
-    ///         .unwrap()
+    ///     CreateModerationRequest {
+    ///         input: ModerationInput::String("Sample text to moderate".to_string()),
+    ///         model: Some("text-moderation-latest".to_string()),
+    ///     }
     /// ).await?;
     ///
     /// for result in response.results {
@@ -54,6 +59,8 @@ pub trait ModerationsService {
     ///             println!("  - Violence (score: {})", result.category_scores.violence);
     ///         }
     ///     }
+    /// }
+    /// # Ok(())
     /// # }
     /// ```
     fn create_moderation(

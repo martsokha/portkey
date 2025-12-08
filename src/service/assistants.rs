@@ -12,7 +12,10 @@ use crate::{PortkeyClient, Result};
 /// # Example
 ///
 /// ```no_run
-/// # use portkey_sdk::{PortkeyConfig, PortkeyClient, Result};
+/// use portkey_sdk::{PortkeyConfig, PortkeyClient, Result};
+/// use portkey_sdk::service::AssistantsService;
+/// use portkey_sdk::model::CreateAssistantRequest;
+///
 /// # async fn example() -> Result<()> {
 /// let config = PortkeyConfig::builder()
 ///     .with_api_key("your-api-key")
@@ -20,12 +23,12 @@ use crate::{PortkeyClient, Result};
 /// let client = PortkeyClient::new(config)?;
 ///
 ///     let assistant = client.create_assistant(
-///         CreateAssistantRequest::builder()
-///             .model("gpt-4")
-///             .name("Math Tutor")
-///             .instructions("You are a helpful math tutor.")
-///             .build()
-///             .unwrap()
+///         CreateAssistantRequest {
+///             model: "gpt-4".to_string(),
+///             name: Some("Math Tutor".to_string()),
+///             instructions: Some("You are a helpful math tutor.".to_string()),
+///             ..Default::default()
+///         }
 ///     ).await?;
 ///
 ///     println!("Created assistant: {}", assistant.id);

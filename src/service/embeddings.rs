@@ -14,16 +14,16 @@ use crate::model::{CreateEmbeddingRequest, CreateEmbeddingResponse};
 /// # Example
 ///
 /// ```rust,no_run
-/// use portkey_sdk::{AuthMethod, PortkeyConfig, EmbeddingsService, Result};
+/// use portkey_sdk::{PortkeyConfig, Result};
+/// use portkey_sdk::service::EmbeddingsService;
+/// use portkey_sdk::builder::AuthMethod;
 /// use portkey_sdk::model::{CreateEmbeddingRequest, EmbeddingInput, EncodingFormat};
 ///
 /// #[tokio::main]
 /// async fn main() -> Result<()> {
 ///     let client = PortkeyConfig::builder()
 ///         .with_api_key("your-portkey-api-key")
-///         .with_auth_method(AuthMethod::VirtualKey {
-///             virtual_key: "your-virtual-key".to_string(),
-///         })
+///         .with_auth_method(AuthMethod::virtual_key("your-virtual-key"))
 ///         .build_client()?;
 ///
 ///     // Create embeddings for a single string
@@ -63,15 +63,15 @@ pub trait EmbeddingsService {
     /// # Example
     ///
     /// ```rust,no_run
-    /// use portkey_sdk::{AuthMethod, PortkeyConfig, EmbeddingsService, Result};
+    /// use portkey_sdk::{PortkeyConfig, Result};
+    /// use portkey_sdk::service::EmbeddingsService;
+    /// use portkey_sdk::builder::AuthMethod;
     /// use portkey_sdk::model::{CreateEmbeddingRequest, EmbeddingInput};
     ///
     /// # async fn example() -> Result<()> {
     /// # let client = PortkeyConfig::builder()
     /// #     .with_api_key("key")
-    /// #     .with_auth_method(AuthMethod::VirtualKey {
-    /// #         virtual_key: "vk".to_string(),
-    /// #     })
+    /// #     .with_auth_method(AuthMethod::virtual_key("vk"))
     /// #     .build_client()?;
     /// let request = CreateEmbeddingRequest {
     ///     model: "text-embedding-3-small".to_string(),

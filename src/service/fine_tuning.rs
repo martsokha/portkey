@@ -11,9 +11,10 @@ use crate::{PortkeyClient, Result};
 /// # Example
 ///
 /// ```no_run
-/// # use portkey_sdk::{PortkeyConfig, PortkeyClient, Result};
-/// # use portkey_sdk::service::FineTuningService;
-/// # use portkey_sdk::model::CreateFineTuningJobRequest;
+/// use portkey_sdk::{PortkeyConfig, PortkeyClient, Result};
+/// use portkey_sdk::service::FineTuningService;
+/// use portkey_sdk::model::CreateFineTuningJobRequest;
+///
 /// # async fn example() -> Result<()> {
 /// let config = PortkeyConfig::builder()
 ///     .with_api_key("your-api-key")
@@ -68,10 +69,11 @@ pub trait FineTuningService {
     /// # Example
     ///
     /// ```no_run
-    /// # use portkey_sdk::{PortkeyClient, Result};
     /// # use portkey_sdk::service::FineTuningService;
-    /// # async fn example(client: PortkeyClient) -> Result<()> {
-    /// let jobs = client.list_fine_tuning_jobs(None, Some(10)).await?;
+    /// # use portkey_sdk::model::PaginationParams;
+    /// # async fn example(client: &impl FineTuningService) -> portkey_sdk::Result<()> {
+    /// let params = PaginationParams { limit: Some(10), order: None, after: None, before: None };
+    /// let jobs = client.list_fine_tuning_jobs(params).await?;
     /// for job in jobs.data {
     ///     println!("Job {}: {}", job.id, job.status);
     /// }
@@ -138,10 +140,11 @@ pub trait FineTuningService {
     /// # Example
     ///
     /// ```no_run
-    /// # use portkey_sdk::{PortkeyClient, Result};
     /// # use portkey_sdk::service::FineTuningService;
-    /// # async fn example(client: PortkeyClient) -> Result<()> {
-    /// let events = client.list_fine_tuning_job_events("ftjob-abc123", None, Some(10)).await?;
+    /// # use portkey_sdk::model::PaginationParams;
+    /// # async fn example(client: &impl FineTuningService) -> portkey_sdk::Result<()> {
+    /// let params = PaginationParams { limit: Some(10), order: None, after: None, before: None };
+    /// let events = client.list_fine_tuning_job_events("ftjob-abc123", params).await?;
     /// for event in events.data {
     ///     println!("[{}] {}", event.level, event.message);
     /// }
@@ -165,10 +168,11 @@ pub trait FineTuningService {
     /// # Example
     ///
     /// ```no_run
-    /// # use portkey_sdk::{PortkeyClient, Result};
     /// # use portkey_sdk::service::FineTuningService;
-    /// # async fn example(client: PortkeyClient) -> Result<()> {
-    /// let checkpoints = client.list_fine_tuning_job_checkpoints("ftjob-abc123", None, Some(5)).await?;
+    /// # use portkey_sdk::model::PaginationParams;
+    /// # async fn example(client: &impl FineTuningService) -> portkey_sdk::Result<()> {
+    /// let params = PaginationParams { limit: Some(5), order: None, after: None, before: None };
+    /// let checkpoints = client.list_fine_tuning_job_checkpoints("ftjob-abc123", params).await?;
     /// for checkpoint in checkpoints.data {
     ///     println!("Checkpoint at step {}", checkpoint.step_number);
     /// }

@@ -8,9 +8,10 @@ use crate::{PortkeyClient, Result};
 /// # Example
 ///
 /// ```no_run
-/// # use portkey_sdk::{PortkeyConfig, PortkeyClient, Result};
-/// # use portkey_sdk::service::BatchesService;
-/// # use portkey_sdk::model::CreateBatchRequest;
+/// use portkey_sdk::{PortkeyConfig, PortkeyClient, Result};
+/// use portkey_sdk::service::BatchesService;
+/// use portkey_sdk::model::CreateBatchRequest;
+///
 /// # async fn example() -> Result<()> {
 /// let config = PortkeyConfig::builder()
 ///     .with_api_key("your-api-key")
@@ -101,9 +102,15 @@ pub trait BatchesService {
     /// # Example
     ///
     /// ```no_run
-    /// let batches = client.list_batches(None, Some(10)).await?;
+    /// # use portkey_sdk::service::BatchesService;
+    /// # use portkey_sdk::model::PaginationParams;
+    /// # async fn example(client: &impl BatchesService) -> portkey_sdk::Result<()> {
+    /// let params = PaginationParams { limit: Some(10), order: None, after: None, before: None };
+    /// let batches = client.list_batches(params).await?;
     /// for batch in batches.data {
     ///     println!("Batch {}: {}", batch.id, batch.status);
+    /// }
+    /// # Ok(())
     /// # }
     /// ```
     fn list_batches(

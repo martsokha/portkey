@@ -18,16 +18,16 @@ use crate::model::{
 /// # Example
 ///
 /// ```rust,no_run
-/// use portkey_sdk::{AuthMethod, PortkeyConfig, LogsService, Result};
+/// use portkey_sdk::{PortkeyConfig, Result};
+/// use portkey_sdk::service::LogsService;
+/// use portkey_sdk::builder::AuthMethod;
 /// use portkey_sdk::model::{CreateLogExportRequest, GenerationsFilter, LogExportField};
 ///
 /// #[tokio::main]
 /// async fn main() -> Result<()> {
 ///     let client = PortkeyConfig::builder()
 ///         .with_api_key("your-portkey-api-key")
-///         .with_auth_method(AuthMethod::VirtualKey {
-///             virtual_key: "your-virtual-key".to_string(),
-///         })
+///         .with_auth_method(AuthMethod::virtual_key("your-virtual-key"))
 ///         .build_client()?;
 ///
 ///     // Create a log export

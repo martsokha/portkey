@@ -12,13 +12,15 @@ use crate::builder::PortkeyBuilderError;
 /// Handling different error types:
 ///
 /// ```no_run
-/// # use portkey_sdk::{Error, Result, PortkeyClient};
+/// use portkey_sdk::{Error, Result, PortkeyClient};
+/// use portkey_sdk::service::ModelsService;
+///
 /// # async fn example() -> Result<()> {
 /// let client: PortkeyClient = PortkeyClient::from_env()?;
 ///
 /// // Example error handling
-/// match client.list_models().await {
-///     Ok(models) => println!("Found {} models", models.len()),
+/// match client.list_models(None).await {
+///     Ok(models) => println!("Found {} models", models.data.len()),
 ///     Err(Error::Http(e)) => println!("Network error: {}", e),
 ///     Err(Error::Config(e)) => println!("Configuration error: {}", e),
 ///     Err(e) => println!("Other error: {}", e),

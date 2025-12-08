@@ -11,7 +11,10 @@ use crate::{PortkeyClient, Result};
 /// # Example
 ///
 /// ```no_run
-/// # use portkey_sdk::{PortkeyConfig, PortkeyClient, Result};
+/// use portkey_sdk::{PortkeyConfig, PortkeyClient, Result};
+/// use portkey_sdk::service::RunsService;
+/// use portkey_sdk::model::CreateRunRequest;
+///
 /// # async fn example() -> Result<()> {
 /// let config = PortkeyConfig::builder()
 ///     .with_api_key("your-api-key")
@@ -20,10 +23,10 @@ use crate::{PortkeyClient, Result};
 ///
 ///     let run = client.create_run(
 ///         "thread_abc123",
-///         CreateRunRequest::builder()
-///             .assistant_id("asst_abc123")
-///             .build()
-///             .unwrap()
+///         CreateRunRequest {
+///             assistant_id: "asst_abc123".to_string(),
+///             ..Default::default()
+///         }
 ///     ).await?;
 ///
 ///     println!("Created run: {}", run.id);

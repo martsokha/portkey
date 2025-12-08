@@ -8,7 +8,10 @@ use crate::{PortkeyClient, Result};
 /// # Example
 ///
 /// ```no_run
-/// # use portkey_sdk::{PortkeyConfig, PortkeyClient, Result};
+/// use portkey_sdk::{PortkeyConfig, PortkeyClient, Result};
+/// use portkey_sdk::service::ThreadsService;
+/// use portkey_sdk::model::CreateThreadRequest;
+///
 /// # async fn example() -> Result<()> {
 /// let config = PortkeyConfig::builder()
 ///     .with_api_key("your-api-key")
@@ -16,9 +19,7 @@ use crate::{PortkeyClient, Result};
 /// let client = PortkeyClient::new(config)?;
 ///
 ///     let thread = client.create_thread(
-///         CreateThreadRequest::builder()
-///             .build()
-///             .unwrap()
+///         CreateThreadRequest::default()
 ///     ).await?;
 ///
 ///     println!("Created thread: {}", thread.id);

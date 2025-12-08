@@ -28,15 +28,15 @@ pub trait ImagesService {
     /// # Example
     ///
     /// ```no_run
-    /// use portkey_sdk::{PortkeyConfig, PortkeyClient, ImagesService, AuthMethod};
+    /// use portkey_sdk::{PortkeyConfig, PortkeyClient};
+    /// use portkey_sdk::service::ImagesService;
+    /// use portkey_sdk::builder::AuthMethod;
     /// use portkey_sdk::model::{CreateImageRequest, ImageSize};
     ///
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
     /// let config = PortkeyConfig::builder()
     ///     .with_api_key("your-api-key")
-    ///     .with_auth_method(AuthMethod::VirtualKey {
-    ///         virtual_key: "your-virtual-key".to_string()
-    ///     })
+    ///     .with_auth_method(AuthMethod::virtual_key("your-virtual-key"))
     ///     .build()?;
     /// let client = PortkeyClient::new(config)?;
     ///
@@ -78,16 +78,16 @@ pub trait ImagesService {
     /// # Example
     ///
     /// ```no_run
-    /// use portkey_sdk::{PortkeyConfig, PortkeyClient, ImagesService, AuthMethod};
+    /// use portkey_sdk::{PortkeyConfig, PortkeyClient};
+    /// use portkey_sdk::service::ImagesService;
+    /// use portkey_sdk::builder::AuthMethod;
     /// use portkey_sdk::model::{CreateImageEditRequest, ImageSize};
     /// use std::fs;
     ///
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
     /// let config = PortkeyConfig::builder()
     ///     .with_api_key("your-api-key")
-    ///     .with_auth_method(AuthMethod::VirtualKey {
-    ///         virtual_key: "your-virtual-key".to_string()
-    ///     })
+    ///     .with_auth_method(AuthMethod::virtual_key("your-virtual-key"))
     ///     .build()?;
     /// let client = PortkeyClient::new(config)?;
     ///
@@ -137,16 +137,16 @@ pub trait ImagesService {
     /// # Example
     ///
     /// ```no_run
-    /// use portkey_sdk::{PortkeyConfig, PortkeyClient, ImagesService, AuthMethod};
+    /// use portkey_sdk::{PortkeyConfig, PortkeyClient};
+    /// use portkey_sdk::service::ImagesService;
+    /// use portkey_sdk::builder::AuthMethod;
     /// use portkey_sdk::model::{CreateImageVariationRequest, ImageSize};
     /// use std::fs;
     ///
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
     /// let config = PortkeyConfig::builder()
     ///     .with_api_key("your-api-key")
-    ///     .with_auth_method(AuthMethod::VirtualKey {
-    ///         virtual_key: "your-virtual-key".to_string()
-    ///     })
+    ///     .with_auth_method(AuthMethod::virtual_key("your-virtual-key"))
     ///     .build()?;
     /// let client = PortkeyClient::new(config)?;
     ///
