@@ -144,7 +144,9 @@ impl ResponsesService for PortkeyClient {
             "Creating response"
         );
 
-        let response = self.post("/responses")?.json(&request).send().await?;
+        let response = self
+            .send_json(reqwest::Method::POST, "/responses", &request)
+            .await?;
         let response = response.error_for_status()?;
         let response_data: Response = response.json().await?;
 
@@ -160,7 +162,7 @@ impl ResponsesService for PortkeyClient {
         );
 
         let path = format!("/responses/{}", response_id);
-        let response = self.get(&path)?.send().await?;
+        let response = self.send(reqwest::Method::GET, &path).await?;
         let response = response.error_for_status()?;
         let response_data: Response = response.json().await?;
 
@@ -176,7 +178,7 @@ impl ResponsesService for PortkeyClient {
         );
 
         let path = format!("/responses/{}", response_id);
-        let response = self.delete(&path)?.send().await?;
+        let response = self.send(reqwest::Method::DELETE, &path).await?;
         response.error_for_status()?;
 
         Ok(())
@@ -197,7 +199,7 @@ impl ResponsesService for PortkeyClient {
         );
 
         let path = format!("/responses/{}/input_items", response_id);
-        let mut request = self.get(&path)?;
+        let mut request = self.request_builder(reqwest::Method::GET, &path)?;
 
         // Add query parameters if specified
         if let Some(limit) = params.limit {

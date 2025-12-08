@@ -209,9 +209,7 @@ impl AudioService for PortkeyClient {
         }
 
         let response = self
-            .post("/audio/transcriptions")?
-            .multipart(form)
-            .send()
+            .send_multipart(reqwest::Method::POST, "/audio/transcriptions", form)
             .await?;
 
         let response = response.error_for_status()?;
@@ -220,7 +218,9 @@ impl AudioService for PortkeyClient {
     }
 
     async fn create_speech(&self, request: CreateSpeechRequest) -> Result<Vec<u8>> {
-        let response = self.post("/audio/speech")?.json(&request).send().await?;
+        let response = self
+            .send_json(reqwest::Method::POST, "/audio/speech", &request)
+            .await?;
 
         let response = response.error_for_status()?;
         let audio_bytes = response.bytes().await?;
@@ -260,9 +260,7 @@ impl AudioService for PortkeyClient {
         }
 
         let response = self
-            .post("/audio/translations")?
-            .multipart(form)
-            .send()
+            .send_multipart(reqwest::Method::POST, "/audio/translations", form)
             .await?;
 
         let response = response.error_for_status()?;

@@ -106,9 +106,7 @@ impl ChatService for PortkeyClient {
         );
 
         let response = self
-            .post("/chat/completions")?
-            .json(&request)
-            .send()
+            .send_json(reqwest::Method::POST, "/chat/completions", &request)
             .await?;
         let response = response.error_for_status()?;
         let chat_response: ChatCompletionResponse = response.json().await?;

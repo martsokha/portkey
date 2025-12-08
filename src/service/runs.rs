@@ -99,9 +99,11 @@ impl RunsService for PortkeyClient {
         );
 
         let response = self
-            .post(&format!("/threads/{}/runs", thread_id))?
-            .json(&request)
-            .send()
+            .send_json(
+                reqwest::Method::POST,
+                &format!("/threads/{}/runs", thread_id),
+                &request,
+            )
             .await?;
         let response = response.error_for_status()?;
         let run: Run = response.json().await?;
@@ -125,8 +127,10 @@ impl RunsService for PortkeyClient {
         );
 
         let response = self
-            .get(&format!("/threads/{}/runs/{}", thread_id, run_id))?
-            .send()
+            .send(
+                reqwest::Method::GET,
+                &format!("/threads/{}/runs/{}", thread_id, run_id),
+            )
             .await?;
         let response = response.error_for_status()?;
         let run: Run = response.json().await?;
@@ -155,9 +159,11 @@ impl RunsService for PortkeyClient {
         );
 
         let response = self
-            .post(&format!("/threads/{}/runs/{}", thread_id, run_id))?
-            .json(&request)
-            .send()
+            .send_json(
+                reqwest::Method::POST,
+                &format!("/threads/{}/runs/{}", thread_id, run_id),
+                &request,
+            )
             .await?;
         let response = response.error_for_status()?;
         let run: Run = response.json().await?;
@@ -187,9 +193,13 @@ impl RunsService for PortkeyClient {
         let query_params_refs: Vec<(&str, &str)> =
             query_params.iter().map(|(k, v)| (*k, v.as_str())).collect();
 
-        let url = self.build_url(&format!("/threads/{}/runs", thread_id), &query_params_refs);
-
-        let response = self.get(url?.as_str())?.send().await?;
+        let response = self
+            .send_with_params(
+                reqwest::Method::GET,
+                &format!("/threads/{}/runs", thread_id),
+                &query_params_refs,
+            )
+            .await?;
         let response = response.error_for_status()?;
         let runs: ListRunsResponse = response.json().await?;
 
@@ -217,12 +227,11 @@ impl RunsService for PortkeyClient {
         );
 
         let response = self
-            .post(&format!(
-                "/threads/{}/runs/{}/submit_tool_outputs",
-                thread_id, run_id
-            ))?
-            .json(&request)
-            .send()
+            .send_json(
+                reqwest::Method::POST,
+                &format!("/threads/{}/runs/{}/submit_tool_outputs", thread_id, run_id),
+                &request,
+            )
             .await?;
         let response = response.error_for_status()?;
         let run: Run = response.json().await?;
@@ -246,9 +255,11 @@ impl RunsService for PortkeyClient {
         );
 
         let response = self
-            .post(&format!("/threads/{}/runs/{}/cancel", thread_id, run_id))?
-            .json(&serde_json::json!({}))
-            .send()
+            .send_json(
+                reqwest::Method::POST,
+                &format!("/threads/{}/runs/{}/cancel", thread_id, run_id),
+                &serde_json::json!({}),
+            )
             .await?;
         let response = response.error_for_status()?;
         let run: Run = response.json().await?;
@@ -269,7 +280,9 @@ impl RunsService for PortkeyClient {
             "Creating thread and run"
         );
 
-        let response = self.post("/threads/runs")?.json(&request).send().await?;
+        let response = self
+            .send_json(reqwest::Method::POST, "/threads/runs", &request)
+            .await?;
         let response = response.error_for_status()?;
         let run: Run = response.json().await?;
 
@@ -298,11 +311,10 @@ impl RunsService for PortkeyClient {
         );
 
         let response = self
-            .get(&format!(
-                "/threads/{}/runs/{}/steps/{}",
-                thread_id, run_id, step_id
-            ))?
-            .send()
+            .send(
+                reqwest::Method::GET,
+                &format!("/threads/{}/runs/{}/steps/{}", thread_id, run_id, step_id),
+            )
             .await?;
         let response = response.error_for_status()?;
         let step: RunStep = response.json().await?;
@@ -334,12 +346,13 @@ impl RunsService for PortkeyClient {
         let query_params_refs: Vec<(&str, &str)> =
             query_params.iter().map(|(k, v)| (*k, v.as_str())).collect();
 
-        let url = self.build_url(
-            &format!("/threads/{}/runs/{}/steps", thread_id, run_id),
-            &query_params_refs,
-        );
-
-        let response = self.get(url?.as_str())?.send().await?;
+        let response = self
+            .send_with_params(
+                reqwest::Method::GET,
+                &format!("/threads/{}/runs/{}/steps", thread_id, run_id),
+                &query_params_refs,
+            )
+            .await?;
         let response = response.error_for_status()?;
         let steps: ListRunStepsResponse = response.json().await?;
 

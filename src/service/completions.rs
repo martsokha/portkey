@@ -61,9 +61,7 @@ impl CompletionsService for PortkeyClient {
         );
 
         let response = self
-            .post("/completions")?
-            .json(&request)
-            .send()
+            .send_json(reqwest::Method::POST, "/completions", &request)
             .await?
             .error_for_status()?
             .json::<CompletionResponse>()

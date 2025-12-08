@@ -10,74 +10,11 @@ use std::time::Duration;
 use derive_builder::Builder;
 use reqwest::Client;
 
+use super::auth::AuthMethod;
 use super::portkey::PortkeyClient;
 #[cfg(feature = "tracing")]
 use crate::TRACING_TARGET_CONFIG;
 use crate::error::Result;
-
-/// Authentication method for Portkey API.
-///
-/// Portkey supports multiple authentication methods for routing requests
-/// to different LLM providers.
-#[derive(Debug, Clone)]
-pub enum AuthMethod {
-    /// Virtual Key authentication - managed provider credentials in Portkey.
-    ///
-    /// Uses `x-portkey-virtual-key` header. Virtual keys are managed in the
-    /// Portkey dashboard and securely store provider API keys.
-    ///
-    /// # Example
-    /// ```no_run
-    /// # use portkey_sdk::AuthMethod;
-    /// let auth = AuthMethod::VirtualKey {
-    ///     virtual_key: "your-virtual-key".to_string(),
-    /// };
-    /// ```
-    VirtualKey {
-        /// The virtual key ID from Portkey dashboard
-        virtual_key: String,
-    },
-
-    /// Provider authentication with direct provider credentials.
-    ///
-    /// Uses `x-portkey-provider` and `Authorization` headers to directly
-    /// authenticate with a provider.
-    ///
-    /// # Example
-    /// ```no_run
-    /// # use portkey_sdk::AuthMethod;
-    /// let auth = AuthMethod::ProviderAuth {
-    ///     provider: "openai".to_string(),
-    ///     authorization: "Bearer sk-...".to_string(),
-    ///     custom_host: None,
-    /// };
-    /// ```
-    ProviderAuth {
-        /// Provider name (e.g., "openai", "anthropic", "google")
-        provider: String,
-        /// Authorization header value (e.g., "Bearer sk-...")
-        authorization: String,
-        /// Optional custom host URL for self-hosted or enterprise endpoints
-        custom_host: Option<String>,
-    },
-
-    /// Config-based authentication using Portkey configs.
-    ///
-    /// Uses `x-portkey-config` header. Configs define complex routing,
-    /// fallback, and load balancing rules in the Portkey dashboard.
-    ///
-    /// # Example
-    /// ```no_run
-    /// # use portkey_sdk::AuthMethod;
-    /// let auth = AuthMethod::Config {
-    ///     config_id: "pc-config-123".to_string(),
-    /// };
-    /// ```
-    Config {
-        /// The config ID from Portkey dashboard
-        config_id: String,
-    },
-}
 
 /// Configuration for the Portkey API client.
 ///

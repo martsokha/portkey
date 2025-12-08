@@ -6,9 +6,11 @@
 use std::fmt;
 use std::sync::Arc;
 
-use reqwest::{Client, Method, RequestBuilder};
+use reqwest::multipart::Form;
+use reqwest::{Client, Method, RequestBuilder, Response};
 
-use super::config::{AuthMethod, PortkeyConfig};
+use super::auth::AuthMethod;
+use super::config::PortkeyConfig;
 #[cfg(feature = "tracing")]
 use crate::TRACING_TARGET_CLIENT;
 use crate::error::Result;
@@ -264,7 +266,7 @@ impl PortkeyClient {
     }
 
     /// Builds a URL with the given path and optional query parameters.
-    pub(crate) fn build_url(&self, path: &str, params: &[(&str, &str)]) -> Result<url::Url> {
+    fn build_url(&self, path: &str, params: &[(&str, &str)]) -> Result<url::Url> {
         let mut url = self.parse_url(path)?;
 
         if !params.is_empty() {
@@ -275,9 +277,7 @@ impl PortkeyClient {
     }
 
     /// Creates an HTTP request with the specified method.
-    fn request(&self, method: Method, path: &str) -> Result<RequestBuilder> {
-        let url = self.parse_url(path)?;
-
+    fn request(&self, method: Method, url: url::Url) -> RequestBuilder {
         #[cfg(feature = "tracing")]
         tracing::trace!(
             target: TRACING_TARGET_CLIENT,
@@ -292,32 +292,57 @@ impl PortkeyClient {
             .request(method, url)
             .timeout(self.inner.config.timeout());
 
-        Ok(self.apply_portkey_headers(builder))
+        self.apply_portkey_headers(builder)
     }
 
-    /// Creates a GET request.
-    pub(crate) fn get(&self, path: &str) -> Result<RequestBuilder> {
-        self.request(Method::GET, path)
+    /// Sends a GET request and returns the response.
+    pub(crate) async fn send(&self, method: Method, path: &str) -> Result<Response> {
+        let url = self.parse_url(path)?;
+        let response = self.request(method, url).send().await?;
+        Ok(response)
     }
 
-    /// Creates a POST request.
-    pub(crate) fn post(&self, path: &str) -> Result<RequestBuilder> {
-        self.request(Method::POST, path)
+    /// Sends a request with JSON body.
+    pub(crate) async fn send_json<T: serde::Serialize>(
+        &self,
+        method: Method,
+        path: &str,
+        data: &T,
+    ) -> Result<Response> {
+        let url = self.parse_url(path)?;
+        let response = self.request(method, url).json(data).send().await?;
+        Ok(response)
     }
 
-    /// Creates a PUT request.
-    pub(crate) fn put(&self, path: &str) -> Result<RequestBuilder> {
-        self.request(Method::PUT, path)
+    /// Sends a request with query parameters.
+    pub(crate) async fn send_with_params(
+        &self,
+        method: Method,
+        path: &str,
+        params: &[(&str, &str)],
+    ) -> Result<Response> {
+        let url = self.build_url(path, params)?;
+        let response = self.request(method, url).send().await?;
+        Ok(response)
     }
 
-    /// Creates a PATCH request.
-    pub(crate) fn patch(&self, path: &str) -> Result<RequestBuilder> {
-        self.request(Method::PATCH, path)
+    /// Sends a request with multipart form data.
+    pub(crate) async fn send_multipart(
+        &self,
+        method: Method,
+        path: &str,
+        form: Form,
+    ) -> Result<Response> {
+        let url = self.parse_url(path)?;
+        let response = self.request(method, url).multipart(form).send().await?;
+        Ok(response)
     }
 
-    /// Creates a DELETE request.
-    pub(crate) fn delete(&self, path: &str) -> Result<RequestBuilder> {
-        self.request(Method::DELETE, path)
+    /// Creates a request builder for custom query parameter building.
+    /// Use this for complex query scenarios that need conditional parameters.
+    pub(crate) fn request_builder(&self, method: Method, path: &str) -> Result<RequestBuilder> {
+        let url = self.parse_url(path)?;
+        Ok(self.request(method, url))
     }
 }
 
@@ -423,21 +448,6 @@ mod tests {
 
         assert!(debug_output.contains("secr****"));
         assert!(!debug_output.contains("secret_api_key_12345"));
-
-        Ok(())
-    }
-
-    #[test]
-    fn test_request_url_construction() -> Result<()> {
-        let config = create_test_config();
-        let client = PortkeyClient::new(config)?;
-
-        // Test URL construction (we can only check that the method returns a RequestBuilder)
-        let _get_request = client.get("/test");
-        let _post_request = client.post("/test");
-        let _put_request = client.put("/test");
-        let _patch_request = client.patch("/test");
-        let _delete_request = client.delete("/test");
 
         Ok(())
     }

@@ -98,7 +98,9 @@ impl AssistantsService for PortkeyClient {
             "Creating assistant"
         );
 
-        let response = self.post("/assistants")?.json(&request).send().await?;
+        let response = self
+            .send_json(reqwest::Method::POST, "/assistants", &request)
+            .await?;
         let response = response.error_for_status()?;
         let assistant: Assistant = response.json().await?;
 
@@ -120,8 +122,10 @@ impl AssistantsService for PortkeyClient {
         );
 
         let response = self
-            .get(&format!("/assistants/{}", assistant_id))?
-            .send()
+            .send(
+                reqwest::Method::GET,
+                &format!("/assistants/{}", assistant_id),
+            )
             .await?;
         let response = response.error_for_status()?;
         let assistant: Assistant = response.json().await?;
@@ -148,9 +152,11 @@ impl AssistantsService for PortkeyClient {
         );
 
         let response = self
-            .post(&format!("/assistants/{}", assistant_id))?
-            .json(&request)
-            .send()
+            .send_json(
+                reqwest::Method::POST,
+                &format!("/assistants/{}", assistant_id),
+                &request,
+            )
             .await?;
         let response = response.error_for_status()?;
         let assistant: Assistant = response.json().await?;
@@ -173,8 +179,10 @@ impl AssistantsService for PortkeyClient {
         );
 
         let response = self
-            .delete(&format!("/assistants/{}", assistant_id))?
-            .send()
+            .send(
+                reqwest::Method::DELETE,
+                &format!("/assistants/{}", assistant_id),
+            )
             .await?;
         let response = response.error_for_status()?;
         let delete_response: DeleteAssistantResponse = response.json().await?;
@@ -202,9 +210,9 @@ impl AssistantsService for PortkeyClient {
         let query_params_refs: Vec<(&str, &str)> =
             query_params.iter().map(|(k, v)| (*k, v.as_str())).collect();
 
-        let url = self.build_url("/assistants", &query_params_refs);
-
-        let response = self.get(url?.as_str())?.send().await?;
+        let response = self
+            .send_with_params(reqwest::Method::GET, "/assistants", &query_params_refs)
+            .await?;
         let response = response.error_for_status()?;
         let assistants: ListAssistantsResponse = response.json().await?;
 
@@ -230,9 +238,11 @@ impl AssistantsService for PortkeyClient {
         );
 
         let response = self
-            .post(&format!("/assistants/{}/files", assistant_id))?
-            .json(&request)
-            .send()
+            .send_json(
+                reqwest::Method::POST,
+                &format!("/assistants/{}/files", assistant_id),
+                &request,
+            )
             .await?;
         let response = response.error_for_status()?;
         let file: AssistantFile = response.json().await?;
@@ -260,8 +270,10 @@ impl AssistantsService for PortkeyClient {
         );
 
         let response = self
-            .get(&format!("/assistants/{}/files/{}", assistant_id, file_id))?
-            .send()
+            .send(
+                reqwest::Method::GET,
+                &format!("/assistants/{}/files/{}", assistant_id, file_id),
+            )
             .await?;
         let response = response.error_for_status()?;
         let file: AssistantFile = response.json().await?;
@@ -289,8 +301,10 @@ impl AssistantsService for PortkeyClient {
         );
 
         let response = self
-            .delete(&format!("/assistants/{}/files/{}", assistant_id, file_id))?
-            .send()
+            .send(
+                reqwest::Method::DELETE,
+                &format!("/assistants/{}/files/{}", assistant_id, file_id),
+            )
             .await?;
         let response = response.error_for_status()?;
         let delete_response: DeleteAssistantFileResponse = response.json().await?;
@@ -320,12 +334,13 @@ impl AssistantsService for PortkeyClient {
         let query_params_refs: Vec<(&str, &str)> =
             query_params.iter().map(|(k, v)| (*k, v.as_str())).collect();
 
-        let url = self.build_url(
-            &format!("/assistants/{}/files", assistant_id),
-            &query_params_refs,
-        );
-
-        let response = self.get(url?.as_str())?.send().await?;
+        let response = self
+            .send_with_params(
+                reqwest::Method::GET,
+                &format!("/assistants/{}/files", assistant_id),
+                &query_params_refs,
+            )
+            .await?;
         let response = response.error_for_status()?;
         let files: ListAssistantFilesResponse = response.json().await?;
 

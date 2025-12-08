@@ -139,9 +139,7 @@ impl FilesService for PortkeyClient {
             .text("purpose", request.purpose);
 
         let response = self
-            .post("/files")?
-            .multipart(form)
-            .send()
+            .send_multipart(reqwest::Method::POST, "/files", form)
             .await?
             .error_for_status()?
             .json::<FileObject>()
@@ -167,8 +165,7 @@ impl FilesService for PortkeyClient {
         );
 
         let response = self
-            .get("/files")?
-            .send()
+            .send(reqwest::Method::GET, "/files")
             .await?
             .error_for_status()?
             .json::<ListFilesResponse>()
@@ -193,8 +190,7 @@ impl FilesService for PortkeyClient {
         );
 
         let response = self
-            .get(&format!("/files/{}", file_id))?
-            .send()
+            .send(reqwest::Method::GET, &format!("/files/{}", file_id))
             .await?
             .error_for_status()?
             .json::<FileObject>()
@@ -220,8 +216,7 @@ impl FilesService for PortkeyClient {
         );
 
         let response = self
-            .get(&format!("/files/{}/content", file_id))?
-            .send()
+            .send(reqwest::Method::GET, &format!("/files/{}/content", file_id))
             .await?
             .error_for_status()?
             .bytes()
@@ -246,8 +241,7 @@ impl FilesService for PortkeyClient {
         );
 
         let response = self
-            .delete(&format!("/files/{}", file_id))?
-            .send()
+            .send(reqwest::Method::DELETE, &format!("/files/{}", file_id))
             .await?
             .error_for_status()?
             .json::<DeleteFileResponse>()

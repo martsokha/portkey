@@ -51,7 +51,9 @@ impl ThreadsService for PortkeyClient {
             "Creating thread"
         );
 
-        let response = self.post("/threads")?.json(&request).send().await?;
+        let response = self
+            .send_json(reqwest::Method::POST, "/threads", &request)
+            .await?;
         let response = response.error_for_status()?;
         let thread: Thread = response.json().await?;
 
@@ -72,7 +74,9 @@ impl ThreadsService for PortkeyClient {
             "Retrieving thread"
         );
 
-        let response = self.get(&format!("/threads/{}", thread_id))?.send().await?;
+        let response = self
+            .send(reqwest::Method::GET, &format!("/threads/{}", thread_id))
+            .await?;
         let response = response.error_for_status()?;
         let thread: Thread = response.json().await?;
 
@@ -94,9 +98,11 @@ impl ThreadsService for PortkeyClient {
         );
 
         let response = self
-            .post(&format!("/threads/{}", thread_id))?
-            .json(&request)
-            .send()
+            .send_json(
+                reqwest::Method::POST,
+                &format!("/threads/{}", thread_id),
+                &request,
+            )
             .await?;
         let response = response.error_for_status()?;
         let thread: Thread = response.json().await?;
@@ -119,8 +125,7 @@ impl ThreadsService for PortkeyClient {
         );
 
         let response = self
-            .delete(&format!("/threads/{}", thread_id))?
-            .send()
+            .send(reqwest::Method::DELETE, &format!("/threads/{}", thread_id))
             .await?;
         let response = response.error_for_status()?;
         let delete_response: DeleteThreadResponse = response.json().await?;

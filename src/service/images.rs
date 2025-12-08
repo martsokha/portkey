@@ -9,7 +9,8 @@ use reqwest::multipart::{Form, Part};
 use crate::client::PortkeyClient;
 use crate::error::Result;
 use crate::model::{
-    CreateImageEditRequest, CreateImageRequest, CreateImageVariationRequest, ImagesResponse,
+    CreateImageEditRequest, CreateImageRequest, CreateImageVariationRequest, ImageSize,
+    ImagesResponse,
 };
 
 /// Trait for Images API operations.
@@ -177,9 +178,7 @@ pub trait ImagesService {
 impl ImagesService for PortkeyClient {
     async fn generate_image(&self, request: CreateImageRequest) -> Result<ImagesResponse> {
         let response = self
-            .post("/images/generations")?
-            .json(&request)
-            .send()
+            .send_json(reqwest::Method::POST, "/images/generations", &request)
             .await?;
         let response = response.error_for_status()?;
         let images_response: ImagesResponse = response.json().await?;
@@ -218,11 +217,11 @@ impl ImagesService for PortkeyClient {
 
         if let Some(size) = request.size {
             let size_str = match size {
-                crate::model::ImageSize::Size256x256 => "256x256",
-                crate::model::ImageSize::Size512x512 => "512x512",
-                crate::model::ImageSize::Size1024x1024 => "1024x1024",
-                crate::model::ImageSize::Size1792x1024 => "1792x1024",
-                crate::model::ImageSize::Size1024x1792 => "1024x1792",
+                ImageSize::Size256x256 => "256x256",
+                ImageSize::Size512x512 => "512x512",
+                ImageSize::Size1024x1024 => "1024x1024",
+                ImageSize::Size1792x1024 => "1792x1024",
+                ImageSize::Size1024x1792 => "1024x1792",
             };
             form = form.text("size", size_str);
         }
@@ -239,7 +238,9 @@ impl ImagesService for PortkeyClient {
             form = form.text("user", user);
         }
 
-        let response = self.post("/images/edits")?.multipart(form).send().await?;
+        let response = self
+            .send_multipart(reqwest::Method::POST, "/images/edits", form)
+            .await?;
 
         let response = response.error_for_status()?;
         let images_response: ImagesResponse = response.json().await?;
@@ -268,11 +269,11 @@ impl ImagesService for PortkeyClient {
 
         if let Some(size) = request.size {
             let size_str = match size {
-                crate::model::ImageSize::Size256x256 => "256x256",
-                crate::model::ImageSize::Size512x512 => "512x512",
-                crate::model::ImageSize::Size1024x1024 => "1024x1024",
-                crate::model::ImageSize::Size1792x1024 => "1792x1024",
-                crate::model::ImageSize::Size1024x1792 => "1024x1792",
+                ImageSize::Size256x256 => "256x256",
+                ImageSize::Size512x512 => "512x512",
+                ImageSize::Size1024x1024 => "1024x1024",
+                ImageSize::Size1792x1024 => "1792x1024",
+                ImageSize::Size1024x1792 => "1024x1792",
             };
             form = form.text("size", size_str);
         }
@@ -290,9 +291,7 @@ impl ImagesService for PortkeyClient {
         }
 
         let response = self
-            .post("/images/variations")?
-            .multipart(form)
-            .send()
+            .send_multipart(reqwest::Method::POST, "/images/variations", form)
             .await?;
 
         let response = response.error_for_status()?;

@@ -116,7 +116,9 @@ impl PromptsService for PortkeyClient {
         );
 
         let path = format!("/prompts/{}/completions", prompt_id);
-        let response = self.post(&path)?.json(&request).send().await?;
+        let response = self
+            .send_json(reqwest::Method::POST, &path, &request)
+            .await?;
         let response = response.error_for_status()?;
         let completion_response: PromptCompletionResponse = response.json().await?;
 
@@ -137,7 +139,9 @@ impl PromptsService for PortkeyClient {
         );
 
         let path = format!("/prompts/{}/render", prompt_id);
-        let response = self.post(&path)?.json(&request).send().await?;
+        let response = self
+            .send_json(reqwest::Method::POST, &path, &request)
+            .await?;
         let response = response.error_for_status()?;
         let render_response: PromptRenderResponse = response.json().await?;
 

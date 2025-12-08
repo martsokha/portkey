@@ -194,9 +194,7 @@ impl FineTuningService for PortkeyClient {
         );
 
         let response = self
-            .post("/fine_tuning/jobs")?
-            .json(&request)
-            .send()
+            .send_json(reqwest::Method::POST, "/fine_tuning/jobs", &request)
             .await?;
         let response = response.error_for_status()?;
         let job: FineTuningJob = response.json().await?;
@@ -224,9 +222,13 @@ impl FineTuningService for PortkeyClient {
         let query_params_refs: Vec<(&str, &str)> =
             query_params.iter().map(|(k, v)| (*k, v.as_str())).collect();
 
-        let url = self.build_url("/fine_tuning/jobs", &query_params_refs);
-
-        let response = self.get(url?.as_str())?.send().await?;
+        let response = self
+            .send_with_params(
+                reqwest::Method::GET,
+                "/fine_tuning/jobs",
+                &query_params_refs,
+            )
+            .await?;
         let response = response.error_for_status()?;
         let jobs: ListFineTuningJobsResponse = response.json().await?;
 
@@ -248,8 +250,10 @@ impl FineTuningService for PortkeyClient {
         );
 
         let response = self
-            .get(&format!("/fine_tuning/jobs/{}", fine_tuning_job_id))?
-            .send()
+            .send(
+                reqwest::Method::GET,
+                &format!("/fine_tuning/jobs/{}", fine_tuning_job_id),
+            )
             .await?;
         let response = response.error_for_status()?;
         let job: FineTuningJob = response.json().await?;
@@ -272,9 +276,11 @@ impl FineTuningService for PortkeyClient {
         );
 
         let response = self
-            .post(&format!("/fine_tuning/jobs/{}/cancel", fine_tuning_job_id))?
-            .json(&serde_json::json!({}))
-            .send()
+            .send_json(
+                reqwest::Method::POST,
+                &format!("/fine_tuning/jobs/{}/cancel", fine_tuning_job_id),
+                &serde_json::json!({}),
+            )
             .await?;
         let response = response.error_for_status()?;
         let job: FineTuningJob = response.json().await?;
@@ -304,12 +310,13 @@ impl FineTuningService for PortkeyClient {
         let query_params_refs: Vec<(&str, &str)> =
             query_params.iter().map(|(k, v)| (*k, v.as_str())).collect();
 
-        let url = self.build_url(
-            &format!("/fine_tuning/jobs/{}/events", fine_tuning_job_id),
-            &query_params_refs,
-        );
-
-        let response = self.get(url?.as_str())?.send().await?;
+        let response = self
+            .send_with_params(
+                reqwest::Method::GET,
+                &format!("/fine_tuning/jobs/{}/events", fine_tuning_job_id),
+                &query_params_refs,
+            )
+            .await?;
         let response = response.error_for_status()?;
         let events: ListFineTuningJobEventsResponse = response.json().await?;
 
@@ -338,12 +345,13 @@ impl FineTuningService for PortkeyClient {
         let query_params_refs: Vec<(&str, &str)> =
             query_params.iter().map(|(k, v)| (*k, v.as_str())).collect();
 
-        let url = self.build_url(
-            &format!("/fine_tuning/jobs/{}/checkpoints", fine_tuning_job_id),
-            &query_params_refs,
-        );
-
-        let response = self.get(url?.as_str())?.send().await?;
+        let response = self
+            .send_with_params(
+                reqwest::Method::GET,
+                &format!("/fine_tuning/jobs/{}/checkpoints", fine_tuning_job_id),
+                &query_params_refs,
+            )
+            .await?;
         let response = response.error_for_status()?;
         let checkpoints: ListFineTuningJobCheckpointsResponse = response.json().await?;
 

@@ -120,7 +120,9 @@ impl BatchesService for PortkeyClient {
             "Creating batch"
         );
 
-        let response = self.post("/batches")?.json(&request).send().await?;
+        let response = self
+            .send_json(reqwest::Method::POST, "/batches", &request)
+            .await?;
         let response = response.error_for_status()?;
         let batch: Batch = response.json().await?;
 
@@ -141,7 +143,9 @@ impl BatchesService for PortkeyClient {
             "Retrieving batch"
         );
 
-        let response = self.get(&format!("/batches/{}", batch_id))?.send().await?;
+        let response = self
+            .send(reqwest::Method::GET, &format!("/batches/{}", batch_id))
+            .await?;
         let response = response.error_for_status()?;
         let batch: Batch = response.json().await?;
 
@@ -163,9 +167,11 @@ impl BatchesService for PortkeyClient {
         );
 
         let response = self
-            .post(&format!("/batches/{}/cancel", batch_id))?
-            .json(&serde_json::json!({}))
-            .send()
+            .send_json(
+                reqwest::Method::POST,
+                &format!("/batches/{}/cancel", batch_id),
+                &serde_json::json!({}),
+            )
             .await?;
         let response = response.error_for_status()?;
         let batch: Batch = response.json().await?;
@@ -190,9 +196,9 @@ impl BatchesService for PortkeyClient {
         let query_params_refs: Vec<(&str, &str)> =
             query_params.iter().map(|(k, v)| (*k, v.as_str())).collect();
 
-        let url = self.build_url("/batches", &query_params_refs);
-
-        let response = self.get(url?.as_str())?.send().await?;
+        let response = self
+            .send_with_params(reqwest::Method::GET, "/batches", &query_params_refs)
+            .await?;
         let response = response.error_for_status()?;
         let batches: ListBatchesResponse = response.json().await?;
 

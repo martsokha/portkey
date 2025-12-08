@@ -92,9 +92,11 @@ impl MessagesService for PortkeyClient {
         );
 
         let response = self
-            .post(&format!("/threads/{}/messages", thread_id))?
-            .json(&request)
-            .send()
+            .send_json(
+                reqwest::Method::POST,
+                &format!("/threads/{}/messages", thread_id),
+                &request,
+            )
             .await?;
         let response = response.error_for_status()?;
         let message: Message = response.json().await?;
@@ -118,8 +120,10 @@ impl MessagesService for PortkeyClient {
         );
 
         let response = self
-            .get(&format!("/threads/{}/messages/{}", thread_id, message_id))?
-            .send()
+            .send(
+                reqwest::Method::GET,
+                &format!("/threads/{}/messages/{}", thread_id, message_id),
+            )
             .await?;
         let response = response.error_for_status()?;
         let message: Message = response.json().await?;
@@ -148,9 +152,11 @@ impl MessagesService for PortkeyClient {
         );
 
         let response = self
-            .post(&format!("/threads/{}/messages/{}", thread_id, message_id))?
-            .json(&request)
-            .send()
+            .send_json(
+                reqwest::Method::POST,
+                &format!("/threads/{}/messages/{}", thread_id, message_id),
+                &request,
+            )
             .await?;
         let response = response.error_for_status()?;
         let message: Message = response.json().await?;
@@ -180,12 +186,13 @@ impl MessagesService for PortkeyClient {
         let query_params_refs: Vec<(&str, &str)> =
             query_params.iter().map(|(k, v)| (*k, v.as_str())).collect();
 
-        let url = self.build_url(
-            &format!("/threads/{}/messages", thread_id),
-            &query_params_refs,
-        );
-
-        let response = self.get(url?.as_str())?.send().await?;
+        let response = self
+            .send_with_params(
+                reqwest::Method::GET,
+                &format!("/threads/{}/messages", thread_id),
+                &query_params_refs,
+            )
+            .await?;
         let response = response.error_for_status()?;
         let messages: ListMessagesResponse = response.json().await?;
 
@@ -214,11 +221,13 @@ impl MessagesService for PortkeyClient {
         );
 
         let response = self
-            .get(&format!(
-                "/threads/{}/messages/{}/files/{}",
-                thread_id, message_id, file_id
-            ))?
-            .send()
+            .send(
+                reqwest::Method::GET,
+                &format!(
+                    "/threads/{}/messages/{}/files/{}",
+                    thread_id, message_id, file_id
+                ),
+            )
             .await?;
         let response = response.error_for_status()?;
         let file: MessageFile = response.json().await?;
@@ -250,12 +259,13 @@ impl MessagesService for PortkeyClient {
         let query_params_refs: Vec<(&str, &str)> =
             query_params.iter().map(|(k, v)| (*k, v.as_str())).collect();
 
-        let url = self.build_url(
-            &format!("/threads/{}/messages/{}/files", thread_id, message_id),
-            &query_params_refs,
-        );
-
-        let response = self.get(url?.as_str())?.send().await?;
+        let response = self
+            .send_with_params(
+                reqwest::Method::GET,
+                &format!("/threads/{}/messages/{}/files", thread_id, message_id),
+                &query_params_refs,
+            )
+            .await?;
         let response = response.error_for_status()?;
         let files: ListMessageFilesResponse = response.json().await?;
 
