@@ -205,6 +205,41 @@ pub enum ResponseFormat {
     },
 }
 
+impl ResponseFormat {
+    /// Creates a JSON schema from a type implementing `schemars::JsonSchema`.
+    ///
+    /// Returns a `JsonSchema` that can be used directly or customized with builder methods.
+    /// To use with `ResponseFormat`, wrap in `ResponseFormat::JsonSchema { json_schema: ... }`.
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// use schemars::JsonSchema;
+    /// use serde::{Deserialize, Serialize};
+    /// use portkey_sdk::model::ResponseFormat;
+    ///
+    /// #[derive(Serialize, Deserialize, JsonSchema)]
+    /// struct MyResponse {
+    ///     message: String,
+    ///     count: i32,
+    /// }
+    ///
+    /// let response_format = ResponseFormat::JsonSchema {
+    ///     json_schema: ResponseFormat::json_schema::<MyResponse>()
+    ///         .with_description("A custom response structure")
+    ///         .with_strict(true),
+    /// };
+    /// ```
+    #[cfg(feature = "schema")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "schema")))]
+    pub fn json_schema<T>() -> JsonSchema
+    where
+        T: schemars::JsonSchema,
+    {
+        JsonSchema::from_type::<T>()
+    }
+}
+
 /// JSON Schema configuration for Structured Outputs
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct JsonSchema {
@@ -218,6 +253,73 @@ pub struct JsonSchema {
     /// Whether to enable strict schema adherence
     #[serde(skip_serializing_if = "Option::is_none")]
     pub strict: Option<bool>,
+}
+
+impl JsonSchema {
+    /// Creates a new JSON schema configuration from a type implementing `schemars::JsonSchema`.
+    ///
+    /// Uses the type's fully qualified name as the default name. Use builder methods
+    /// `with_name()`, `with_description()`, and `with_strict()` to customize.
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// use schemars::JsonSchema;
+    /// use serde::{Deserialize, Serialize};
+    /// use portkey_sdk::model::JsonSchema as PortkeyJsonSchema;
+    ///
+    /// #[derive(Serialize, Deserialize, JsonSchema)]
+    /// struct MyResponse {
+    ///     message: String,
+    ///     count: i32,
+    /// }
+    ///
+    /// let schema = PortkeyJsonSchema::from_type::<MyResponse>()
+    ///     .with_name("MyResponse")
+    ///     .with_description("A custom response structure")
+    ///     .with_strict(true);
+    /// ```
+    #[cfg(feature = "schema")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "schema")))]
+    pub fn from_type<T>() -> Self
+    where
+        T: schemars::JsonSchema,
+    {
+        let schema_obj = schemars::schema_for!(T);
+        let type_name = std::any::type_name::<T>();
+        let name = type_name.split("::").last().unwrap_or(type_name);
+
+        Self {
+            description: None,
+            name: name.to_string(),
+            schema: serde_json::to_value(schema_obj).expect("Failed to serialize schema"),
+            strict: None,
+        }
+    }
+
+    /// Sets the name for this JSON schema.
+    #[cfg(feature = "schema")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "schema")))]
+    pub fn with_name(mut self, name: impl Into<String>) -> Self {
+        self.name = name.into();
+        self
+    }
+
+    /// Sets the description for this JSON schema.
+    #[cfg(feature = "schema")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "schema")))]
+    pub fn with_description(mut self, description: impl Into<String>) -> Self {
+        self.description = Some(description.into());
+        self
+    }
+
+    /// Sets whether to enable strict schema adherence.
+    #[cfg(feature = "schema")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "schema")))]
+    pub fn with_strict(mut self, strict: bool) -> Self {
+        self.strict = Some(strict);
+        self
+    }
 }
 
 /// Stream options for streaming responses
@@ -457,6 +559,104 @@ pub struct ChatCompletionResponseMessage {
     /// Content blocks (for providers with strict_openai_compliance=false)
     #[serde(skip_serializing_if = "Option::is_none")]
     pub content_blocks: Option<Vec<ContentBlock>>,
+}
+
+impl ChatCompletionResponseMessage {
+    /// Deserializes the JSON content of the message into a custom type.
+    ///
+    /// This is useful when using structured outputs with JSON schema,
+    /// allowing you to deserialize the response into your custom type.
+    ///
+    /// Returns `Ok(None)` if the message has no content, `Ok(Some(T))` if deserialization succeeds,
+    /// or `Err` if the content is not valid JSON for the target type.
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// use serde::{Deserialize, Serialize};
+    ///
+    /// #[derive(Serialize, Deserialize)]
+    /// struct MyResponse {
+    ///     message: String,
+    ///     count: i32,
+    /// }
+    ///
+    /// let response_message = /* ... get from API response ... */;
+    /// if let Some(parsed) = response_message.deserialize_content::<MyResponse>()? {
+    ///     println!("Message: {}, Count: {}", parsed.message, parsed.count);
+    /// }
+    /// ```
+    pub fn deserialize_content<T>(&self) -> crate::Result<Option<T>>
+    where
+        T: serde::de::DeserializeOwned,
+    {
+        match &self.content {
+            Some(content) => Ok(Some(serde_json::from_str(content)?)),
+            None => Ok(None),
+        }
+    }
+
+    /// Deserializes JSON from markdown code blocks within the message content.
+    ///
+    /// This method searches for markdown code blocks (` ```json` or ` ``` `) within the content
+    /// and extracts the JSON from within them. It can handle content that has text before or
+    /// after the code block. If no code block is found, it attempts to parse the entire content.
+    ///
+    /// Returns `Ok(None)` if the message has no content, `Ok(Some(T))` if deserialization succeeds,
+    /// or `Err` if the content is not valid JSON for the target type.
+    ///
+    /// # Example
+    ///
+    /// ```ignore
+    /// use serde::{Deserialize, Serialize};
+    ///
+    /// #[derive(Serialize, Deserialize)]
+    /// struct MyResponse {
+    ///     message: String,
+    ///     count: i32,
+    /// }
+    ///
+    /// // Content might be: "Here's your data:\n```json\n{\"message\": \"Hello\", \"count\": 42}\n```\nEnjoy!"
+    /// let response_message = /* ... get from API response ... */;
+    /// if let Some(parsed) = response_message.deserialize_markdown::<MyResponse>()? {
+    ///     println!("Message: {}, Count: {}", parsed.message, parsed.count);
+    /// }
+    /// ```
+    pub fn deserialize_markdown<T>(&self) -> crate::Result<Option<T>>
+    where
+        T: serde::de::DeserializeOwned,
+    {
+        match &self.content {
+            Some(content) => {
+                // Try to find a markdown code block with ```json or ```
+                let json_content = if let Some(start_json) = content.find("```json") {
+                    // Found ```json, extract content between ```json and closing ```
+                    let after_start = &content[start_json + 7..]; // Skip "```json"
+                    if let Some(end) = after_start.find("```") {
+                        after_start[..end].trim()
+                    } else {
+                        // No closing ```, use everything after ```json
+                        after_start.trim()
+                    }
+                } else if let Some(start) = content.find("```") {
+                    // Found plain ```, extract content between ``` and closing ```
+                    let after_start = &content[start + 3..]; // Skip "```"
+                    if let Some(end) = after_start.find("```") {
+                        after_start[..end].trim()
+                    } else {
+                        // No closing ```, use everything after ```
+                        after_start.trim()
+                    }
+                } else {
+                    // No markdown code block found, try to parse the entire content
+                    content.trim()
+                };
+
+                Ok(Some(serde_json::from_str(json_content)?))
+            }
+            None => Ok(None),
+        }
+    }
 }
 
 /// Content block in a response message

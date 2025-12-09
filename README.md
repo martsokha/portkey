@@ -21,7 +21,7 @@ Add this to your `Cargo.toml`:
 ```toml
 [dependencies]
 tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }
-portkey-sdk = { version = "0.1", features = [] }
+portkey-sdk = { version = "0.2", features = [] }
 ```
 
 ## Quick Start
@@ -79,10 +79,10 @@ Choose between two TLS implementations:
 
 ```toml
 # Default: rustls-tls (recommended)
-portkey-sdk = { version = "0.1", features = [] }
+portkey-sdk = { version = "0.2", features = [] }
 
 # Alternative: native-tls
-portkey-sdk = { version = "0.1", features = ["native-tls"], default-features = false }
+portkey-sdk = { version = "0.2", features = ["native-tls"], default-features = false }
 ```
 
 ### Tracing Support
@@ -91,8 +91,20 @@ Enable comprehensive logging and tracing via the [`tracing`](https://crates.io/c
 Tracing targets are defined in `lib.rs` for fine-grained control over log output:
 
 ```toml
-portkey-sdk = { version = "0.1", features = ["tracing"] }
+portkey-sdk = { version = "0.2", features = ["tracing"] }
 ```
+
+### JSON Schema Support for Structured Outputs
+
+Enable JSON Schema support via the [`schemars`](https://crates.io/crates/schemars) crate to use structured outputs with custom types. 
+This feature provides helper methods to create JSON schema configurations and parse structured responses:
+
+```toml
+portkey-sdk = { version = "0.2", features = ["schema"] }
+schemars = { version = "0.8", features = ["derive"] }
+```
+
+See the [structured outputs example](examples/structured_outputs.rs) for a complete working example.
 
 ## Examples
 
@@ -108,6 +120,9 @@ cargo run --example chat_completion
 
 # Run the embeddings example
 cargo run --example embeddings
+
+# Run the structured outputs example (requires schema feature)
+cargo run --example structured_outputs --features schema
 ```
 
 ## Contributing

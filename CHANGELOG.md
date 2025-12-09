@@ -16,6 +16,18 @@ and this project adheres to
 
 - N/A
 
+## [0.2.0] - 2025-12-09
+
+### Added
+
+- Optional `schema` feature for structured outputs support via `schemars`
+- `ResponseFormat::json_schema()` method to create JSON schemas from custom types
+- `JsonSchema::from_type()` method with builder pattern (uses `std::any::type_name` for default names)
+- Builder methods for `JsonSchema`: `with_name()`, `with_description()`, `with_strict()`
+- `ChatCompletionResponseMessage::deserialize_content()` method to deserialize structured JSON responses (returns `crate::Result`)
+- `ChatCompletionResponseMessage::deserialize_markdown()` method to extract and deserialize JSON from markdown code blocks (handles prefix/suffix text)
+- Structured outputs example in `examples/structured_outputs.rs`
+
 ### Deprecated
 
 - N/A
@@ -45,5 +57,6 @@ and this project adheres to
 - Optional `tracing` feature for logging support
 - Optional `strum` feature for enum string conversions
 
-[Unreleased]: https://github.com/martsokha/portkey/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/martsokha/portkey/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/martsokha/portkey/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/martsokha/portkey/releases/tag/v0.1.0
