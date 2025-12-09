@@ -48,18 +48,17 @@ async fn main() -> Result<()> {
     let response = client.create_chat_completion(request).await?;
 
     // Deserialize the structured response
-    if let Some(choice) = response.choices.first() {
-        if let Some(movie) = choice
+    if let Some(choice) = response.choices.first()
+        && let Some(movie) = choice
             .message
             .deserialize_content::<MovieRecommendation>()?
-        {
-            println!("\n🎬 Movie Recommendation:");
-            println!("  Title: {}", movie.title);
-            println!("  Year: {}", movie.year);
-            println!("  Genre: {}", movie.genre);
-            println!("  Rating: {:.1}/10", movie.rating);
-            println!("  Reason: {}", movie.reason);
-        }
+    {
+        println!("\n🎬 Movie Recommendation:");
+        println!("  Title: {}", movie.title);
+        println!("  Year: {}", movie.year);
+        println!("  Genre: {}", movie.genre);
+        println!("  Rating: {:.1}/10", movie.rating);
+        println!("  Reason: {}", movie.reason);
     }
 
     if let Some(usage) = response.usage {
