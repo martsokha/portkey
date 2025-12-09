@@ -5,7 +5,7 @@ name = "portkey-sdk"
 description = "Unofficial Rust SDK for Portkey AI Gateway: route, observe, and optimize LLM requests across 200+ providers"
 readme = "./README.md"
 
-version = "0.1.0"
+version = "0.2.0"
 rust-version = "1.91"
 edition = "2024"
 license = "MIT"
@@ -33,6 +33,8 @@ native-tls = ["reqwest/native-tls"]
 tracing = ["dep:tracing"]
 ## Enable string conversions for enums via strum derive macros
 strum = ["dep:strum"]
+## Enable JSON schema generation support via schemars
+schema = ["dep:schemars"]
 
 [dependencies]
 # HTTP client
@@ -50,6 +52,7 @@ tracing = { version = "0.1", features = [], optional = true }
 thiserror = { version = "2.0", features = [] }
 strum = { version = "0.27", features = ["derive"], optional = true }
 derive_builder = { version = "0.20", features = [] }
+schemars = { version = "0.8", features = ["derive"], optional = true }
 
 [dev-dependencies]
 tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }
