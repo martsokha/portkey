@@ -33,13 +33,13 @@ native-tls = ["reqwest/native-tls"]
 tracing = ["dep:tracing"]
 ## Enable string conversions for enums via strum derive macros
 strum = ["dep:strum"]
-## Enable JSON schema generation support via schemars
+## Enable JSON Schema support for structured outputs with custom types
 schema = ["dep:schemars"]
 
 [dependencies]
 # HTTP client
 reqwest = { version = "0.12", features = ["json", "multipart"], default-features = false }
-url = { version = "2.5" }
+url = { version = "2.5", features = [] }
 
 # (De)serialization
 serde = { version = "1.0", features = ["derive"] }
