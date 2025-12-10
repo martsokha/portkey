@@ -5,7 +5,7 @@ name = "portkey-sdk"
 description = "Unofficial Rust SDK for Portkey AI Gateway: route, observe, and optimize LLM requests across 200+ providers"
 readme = "./README.md"
 
-version = "0.2.0"
+version = "0.3.0"
 rust-version = "1.91"
 edition = "2024"
 license = "MIT"
@@ -22,7 +22,7 @@ rustdoc-args = ["--cfg", "docsrs"]
 
 [features]
 ## Default features enabled by default
-default = ["rustls-tls", "strum"]
+default = ["rustls-tls"]
 
 ## Enable rustls-tls for HTTPS requests (default)
 rustls-tls = ["reqwest/rustls-tls"]
@@ -31,8 +31,6 @@ native-tls = ["reqwest/native-tls"]
 
 ## Enable tracing support for HTTP requests and client operations
 tracing = ["dep:tracing"]
-## Enable string conversions for enums via strum derive macros
-strum = ["dep:strum"]
 ## Enable JSON Schema support for structured outputs with custom types
 schema = ["dep:schemars"]
 
@@ -50,8 +48,9 @@ tracing = { version = "0.1", features = [], optional = true }
 
 # Derive macros & utilities
 thiserror = { version = "2.0", features = [] }
-strum = { version = "0.27", features = ["derive"], optional = true }
+strum = { version = "0.27", features = ["derive"] }
 derive_builder = { version = "0.20", features = [] }
+derive_more = { version = "2.1", features = ["full"] }
 schemars = { version = "0.8", features = ["derive"], optional = true }
 
 [dev-dependencies]

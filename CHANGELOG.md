@@ -16,6 +16,22 @@ and this project adheres to
 
 - N/A
 
+## [0.3.0] - 2025-12-10
+
+### Added
+
+- `derive_more::Add` and `derive_more::Sub` traits for all usage statistics structs (`Usage`, `EmbeddingUsage`, `CompletionUsage`, `RunUsage`)
+- `derive_more` dependency with `full` feature for arithmetic operations on usage types
+
+### Changed
+
+- **BREAKING**: `strum` is now a required dependency (removed from optional features)
+- **BREAKING**: `strum` feature removed from default features
+
+### Removed
+
+- `strum` feature flag (now always enabled)
+
 ## [0.2.0] - 2025-12-09
 
 ### Added
@@ -57,6 +73,7 @@ and this project adheres to
 - Optional `tracing` feature for logging support
 - Optional `strum` feature for enum string conversions
 
-[Unreleased]: https://github.com/martsokha/portkey/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/martsokha/portkey/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/martsokha/portkey/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/martsokha/portkey/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/martsokha/portkey/releases/tag/v0.1.0
