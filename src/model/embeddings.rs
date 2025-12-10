@@ -1,3 +1,4 @@
+use derive_more::{Add, Sub};
 use serde::{Deserialize, Serialize};
 
 /// Input for the embeddings API.
@@ -163,7 +164,7 @@ pub struct Embedding {
 }
 
 /// Usage statistics for an embeddings request.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Add, Sub)]
 pub struct EmbeddingUsage {
     /// The number of tokens used by the prompt.
     pub prompt_tokens: i32,

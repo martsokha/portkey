@@ -4,6 +4,7 @@
 
 use std::collections::HashMap;
 
+use derive_more::{Add, Sub};
 use serde::{Deserialize, Serialize};
 
 /// Request body for creating a completion.
@@ -163,7 +164,7 @@ pub struct CompletionLogprobs {
 }
 
 /// Token usage statistics.
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Add, Sub)]
 pub struct CompletionUsage {
     /// Number of tokens in the prompt.
     pub prompt_tokens: u32,

@@ -21,7 +21,7 @@ Add this to your `Cargo.toml`:
 ```toml
 [dependencies]
 tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }
-portkey-sdk = { version = "0.2", features = [] }
+portkey-sdk = { version = "0.3", features = [] }
 ```
 
 ## Quick Start
@@ -79,10 +79,10 @@ Choose between two TLS implementations:
 
 ```toml
 # Default: rustls-tls (recommended)
-portkey-sdk = { version = "0.2", features = [] }
+portkey-sdk = { version = "0.3", features = [] }
 
 # Alternative: native-tls
-portkey-sdk = { version = "0.2", features = ["native-tls"], default-features = false }
+portkey-sdk = { version = "0.3", features = ["native-tls"], default-features = false }
 ```
 
 ### Tracing Support
@@ -91,7 +91,7 @@ Enable comprehensive logging and tracing via the [`tracing`](https://crates.io/c
 Tracing targets are defined in `lib.rs` for fine-grained control over log output:
 
 ```toml
-portkey-sdk = { version = "0.2", features = ["tracing"] }
+portkey-sdk = { version = "0.3", features = ["tracing"] }
 ```
 
 ### JSON Schema Support for Structured Outputs
@@ -100,7 +100,7 @@ Enable JSON Schema support via the [`schemars`](https://crates.io/crates/schemar
 This feature provides helper methods to create JSON schema configurations and parse structured responses:
 
 ```toml
-portkey-sdk = { version = "0.2", features = ["schema"] }
+portkey-sdk = { version = "0.3", features = ["schema"] }
 schemars = { version = "0.8", features = ["derive"] }
 ```
 
