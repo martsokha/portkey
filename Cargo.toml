@@ -55,4 +55,4 @@ derive_builder = { version = "0.20", features = [] }
 schemars = { version = "0.8", features = ["derive"], optional = true }
 
 [dev-dependencies]
-tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }
+tokio = { version = "1.49", features = ["macros", "rt-multi-thread"] }
