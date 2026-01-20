@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use derive_more::{Add, Sub};
 use serde::{Deserialize, Serialize};
 
 use super::assistants::AssistantTool;
@@ -221,7 +222,7 @@ pub struct RunError {
 }
 
 /// Usage statistics for a run.
-#[derive(Clone, Debug, Serialize, Deserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Add, Sub)]
 pub struct RunUsage {
     /// Number of completion tokens used.
     pub completion_tokens: i32,

@@ -3,8 +3,8 @@
 //! This module contains all data models for chat completions, including
 //! request and response types following the OpenAI-compatible format.
 
+use derive_more::{Add, Sub};
 use serde::{Deserialize, Serialize};
-#[cfg(feature = "strum")]
 use strum::{Display, EnumString};
 
 /// A chat completion message in a conversation.
@@ -155,10 +155,20 @@ pub struct ImageUrl {
 }
 
 /// Image detail level for vision models
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
-#[cfg_attr(feature = "strum", derive(Display, EnumString))]
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    Serialize,
+    Deserialize,
+    Default,
+    Display,
+    EnumString
+)]
 #[serde(rename_all = "lowercase")]
-#[cfg_attr(feature = "strum", strum(serialize_all = "lowercase"))]
+#[strum(serialize_all = "lowercase")]
 pub enum ImageDetail {
     /// Auto detail level (default)
     #[default]
@@ -342,10 +352,19 @@ pub struct ThinkingConfig {
 }
 
 /// Thinking mode type
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[cfg_attr(feature = "strum", derive(Display, EnumString))]
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    Serialize,
+    Deserialize,
+    Display,
+    EnumString
+)]
 #[serde(rename_all = "lowercase")]
-#[cfg_attr(feature = "strum", strum(serialize_all = "lowercase"))]
+#[strum(serialize_all = "lowercase")]
 pub enum ThinkingType {
     /// Thinking mode enabled
     Enabled,
@@ -390,10 +409,19 @@ pub enum ToolChoice {
 }
 
 /// Simple tool choice options
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
-#[cfg_attr(feature = "strum", derive(Display, EnumString))]
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    Serialize,
+    Deserialize,
+    Display,
+    EnumString
+)]
 #[serde(rename_all = "lowercase")]
-#[cfg_attr(feature = "strum", strum(serialize_all = "lowercase"))]
+#[strum(serialize_all = "lowercase")]
 pub enum ToolChoiceSimple {
     /// No tool will be called
     None,
@@ -725,7 +753,7 @@ pub struct ChatCompletionChoice {
 }
 
 /// Token usage statistics
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, Add, Sub)]
 pub struct Usage {
     /// Number of tokens in the prompt
     pub prompt_tokens: i32,
