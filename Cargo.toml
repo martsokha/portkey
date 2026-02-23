@@ -50,7 +50,7 @@ tracing = { version = "0.1", features = [], optional = true }
 
 # Derive macros & utilities
 thiserror = { version = "2.0", features = [] }
-strum = { version = "0.27", features = ["derive"], optional = true }
+strum = { version = "0.28", features = ["derive"], optional = true }
 derive_builder = { version = "0.20", features = [] }
 schemars = { version = "1.2", features = ["derive"], optional = true }
 
